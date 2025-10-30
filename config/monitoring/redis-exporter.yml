@@ -1,0 +1,93 @@
+# Redis Exporter 配置
+# 用于 Prometheus 监控 Redis 性能指标
+
+# Redis 连接配置
+redis:
+  # Unix socket 连接
+  addr: "unix:///data/redis.sock"
+  
+  # 或使用 TCP 连接（如果需要）
+  # addr: "redis://localhost:6379"
+  
+  # 密码（如果设置）
+  password: ""
+  
+  # 数据库
+  db: 0
+
+# 导出器配置
+exporter:
+  # 监听地址
+  listen_address: ":9121"
+  
+  # 指标路径
+  metrics_path: "/metrics"
+  
+  # 日志级别: debug, info, warn, error
+  log_level: "info"
+  
+  # 检查键
+  check_keys:
+    - "EMAIL_VERIFY_CODE_*"
+    - "TEMP_TOKEN_*"
+    - "SERVER_*_ONLINE_USER"
+    - "USER_SESSIONS_*"
+  
+  # 检查单个键
+  check_single_keys:
+    - "SCHEDULE_LAST_CHECK_AT"
+  
+  # 最大不同键数
+  max_distinct_key_groups: 100
+
+# 告警规则（用于 Prometheus AlertManager）
+alerts:
+  # 内存使用率过高
+  - alert: RedisMemoryHigh
+    expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.8
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Redis 内存使用率过高"
+      description: "Redis 内存使用率超过 80%"
+  
+  # 缓存命中率低
+  - alert: RedisCacheHitRateLow
+    expr: rate(redis_keyspace_hits_total[5m]) / (rate(redis_keyspace_hits_total[5m]) + rate(redis_keyspace_misses_total[5m])) < 0.8
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Redis 缓存命中率低"
+      description: "Redis 缓存命中率低于 80%"
+  
+  # 连接数过多
+  - alert: RedisConnectionsHigh
+    expr: redis_connected_clients > 100
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Redis 连接数过多"
+      description: "Redis 连接数超过 100"
+  
+  # Redis 宕机
+  - alert: RedisDown
+    expr: redis_up == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Redis 服务宕机"
+      description: "Redis 服务不可用"
+  
+  # 键数量过多
+  - alert: RedisKeyCountHigh
+    expr: sum(redis_db_keys) > 100000
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Redis 键数量过多"
+      description: "Redis 键数量超过 100000"
