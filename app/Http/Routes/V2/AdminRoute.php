@@ -18,6 +18,7 @@ use App\Http\Controllers\V2\Admin\PaymentController;
 use App\Http\Controllers\V2\Admin\SystemController;
 use App\Http\Controllers\V2\Admin\ThemeController;
 use App\Http\Controllers\V2\Admin\TrafficResetController;
+use App\Http\Controllers\V2\Admin\LogtoController;
 use Illuminate\Contracts\Routing\Registrar;
 
 class AdminRoute
@@ -38,6 +39,17 @@ class AdminRoute
                 $router->get('/getThemeTemplate', [ConfigController::class, 'getThemeTemplate']);
                 $router->post('/setTelegramWebhook', [ConfigController::class, 'setTelegramWebhook']);
                 $router->post('/testSendMail', [ConfigController::class, 'testSendMail']);
+            });
+
+            // Logto Configuration
+            $router->group([
+                'prefix' => 'logto'
+            ], function ($router) {
+                $router->get('/config', [LogtoController::class, 'getConfig']);
+                $router->post('/config', [LogtoController::class, 'saveConfig']);
+                $router->post('/test', [LogtoController::class, 'testConnection']);
+                $router->get('/instructions', [LogtoController::class, 'getInstructions']);
+                $router->get('/stats', [LogtoController::class, 'getStats']);
             });
 
             // Plan

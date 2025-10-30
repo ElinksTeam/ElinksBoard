@@ -3,6 +3,7 @@ namespace App\Http\Routes\V1;
 
 use App\Http\Controllers\V1\Passport\AuthController;
 use App\Http\Controllers\V1\Passport\CommController;
+use App\Http\Controllers\V1\Passport\LogtoAuthController;
 use Illuminate\Contracts\Routing\Registrar;
 
 class PassportRoute
@@ -12,15 +13,18 @@ class PassportRoute
         $router->group([
             'prefix' => 'passport'
         ], function ($router) {
-            // Auth
-            $router->post('/auth/register', [AuthController::class, 'register']);
-            $router->post('/auth/login', [AuthController::class, 'login']);
-            $router->get('/auth/token2Login', [AuthController::class, 'token2Login']);
-            $router->post('/auth/forget', [AuthController::class, 'forget']);
-            $router->post('/auth/getQuickLoginUrl', [AuthController::class, 'getQuickLoginUrl']);
-            $router->post('/auth/loginWithMailLink', [AuthController::class, 'loginWithMailLink']);
-            // Comm
-            $router->post('/comm/sendEmailVerify', [CommController::class, 'sendEmailVerify']);
+            // Logto Authentication (Primary) - with configuration check
+            $router->group([
+                'middleware' => 'logto.configured'
+            ], function ($router) {
+                $router->get('/auth/logto/sign-in', [LogtoAuthController::class, 'signIn']);
+                $router->get('/auth/logto/callback', [LogtoAuthController::class, 'callback']);
+                $router->post('/auth/logto/sign-out', [LogtoAuthController::class, 'signOut']);
+                $router->get('/auth/logto/userinfo', [LogtoAuthController::class, 'userInfo']);
+                $router->get('/auth/logto/check', [LogtoAuthController::class, 'checkAuth']);
+            });
+            
+            // Comm (Keep for other features)
             $router->post('/comm/pv', [CommController::class, 'pv']);
         });
     }

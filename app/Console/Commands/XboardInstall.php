@@ -138,16 +138,6 @@ class XboardInstall extends Command
                 abort(500, '复制环境文件失败，请检查目录权限');
             }
             ;
-            $email = !empty($adminAccount) ? $adminAccount : text(
-                label: '请输入管理员账号',
-                default: 'admin@demo.com',
-                required: true,
-                validate: fn(string $email): ?string => match (true) {
-                    !filter_var($email, FILTER_VALIDATE_EMAIL) => '请输入有效的邮箱地址.',
-                    default => null,
-                }
-            );
-            $password = Helper::guid(false);
             $this->saveToEnv($envConfig);
 
             $this->call('config:cache');
@@ -156,10 +146,6 @@ class XboardInstall extends Command
             Artisan::call("migrate", ['--force' => true]);
             $this->info(Artisan::output());
             $this->info('数据库导入完成');
-            $this->info('开始注册管理员账号');
-            if (!self::registerAdmin($email, $password)) {
-                abort(500, '管理员账号注册失败，请重试');
-            }
             if (function_exists('exec')) {
                 self::restoreProtectedPlugins($this);
             }
@@ -167,12 +153,38 @@ class XboardInstall extends Command
             PluginManager::installDefaultPlugins();
             $this->info('默认插件安装完成');
 
-            $this->info('🎉：一切就绪');
-            $this->info("管理员邮箱：{$email}");
-            $this->info("管理员密码：{$password}");
+            // Configure Logto
+            $this->info('');
+            $this->info('🔐 配置 Logto 认证系统');
+            $this->info('Logto 是现代化的身份认证服务，支持 SSO、MFA、社交登录等功能');
+            $logtoConfig = $this->configureLogto();
+            $this->saveToEnv($logtoConfig);
 
+            $this->info('');
+            $this->info('🎉：一切就绪');
+            $this->info('');
+            
             $defaultSecurePath = hash('crc32b', config('app.key'));
-            $this->info("访问 http(s)://你的站点/{$defaultSecurePath} 进入管理面板，你可以在用户中心修改你的密码。");
+            $appUrl = $envConfig['APP_URL'] ?? 'http://localhost';
+            
+            $this->info('📋 重要信息：');
+            $this->info('');
+            $this->info('1. 管理面板地址：');
+            $this->info("   {$appUrl}/{$defaultSecurePath}");
+            $this->info('');
+            $this->info('2. 首次登录用户将自动成为管理员');
+            $this->info('   - 使用 Logto 完成首次登录');
+            $this->info('   - 系统自动授予管理员权限');
+            $this->info('   - 后续用户为普通用户');
+            $this->info('');
+            $this->info('3. Logto Console 配置：');
+            $this->info("   Redirect URI: {$appUrl}/api/v1/passport/auth/logto/callback");
+            $this->info("   Post Logout URI: {$appUrl}");
+            $this->info('');
+            $this->warn('⚠️  安全提示：');
+            $this->warn('请立即完成首次登录以获取管理员权限！');
+            $this->warn('首次登录后，其他用户将只能获得普通用户权限。');
+            
             $envConfig['INSTALLED'] = true;
             $this->saveToEnv($envConfig);
         } catch (\Exception $e) {
@@ -180,19 +192,7 @@ class XboardInstall extends Command
         }
     }
 
-    public static function registerAdmin($email, $password)
-    {
-        $user = new User();
-        $user->email = $email;
-        if (strlen($password) < 8) {
-            abort(500, '管理员密码长度最小为8位字符');
-        }
-        $user->password = password_hash($password, PASSWORD_DEFAULT);
-        $user->uuid = Helper::guid(true);
-        $user->token = Helper::guid();
-        $user->is_admin = 1;
-        return $user->save();
-    }
+
 
     private function set_env_var($key, $value)
     {
@@ -365,6 +365,63 @@ class XboardInstall extends Command
                 $this->info("请重新输入PostgreSQL数据库配置");
             }
         }
+    }
+
+    /**
+     * 配置 Logto 认证系统
+     *
+     * @return array
+     */
+    private function configureLogto(): array
+    {
+        $this->info('');
+        $this->info('请访问 Logto Console 创建应用并获取以下信息：');
+        $this->info('- Logto Cloud: https://cloud.logto.io');
+        $this->info('- 自托管: 你的 Logto 实例地址');
+        $this->info('');
+
+        $logtoEndpoint = text(
+            label: '请输入 Logto Endpoint (例如: https://your-tenant.logto.app)',
+            placeholder: 'https://your-tenant.logto.app',
+            required: true,
+            validate: fn(string $value): ?string => match (true) {
+                !filter_var($value, FILTER_VALIDATE_URL) => '请输入有效的 URL 地址',
+                !str_starts_with($value, 'http://') && !str_starts_with($value, 'https://') => 'URL 必须以 http:// 或 https:// 开头',
+                default => null,
+            }
+        );
+
+        $logtoAppId = text(
+            label: '请输入 Logto App ID',
+            placeholder: 'your_app_id',
+            required: true,
+            validate: fn(string $value): ?string => match (true) {
+                strlen($value) < 10 => 'App ID 长度不能少于 10 个字符',
+                default => null,
+            }
+        );
+
+        $logtoAppSecret = text(
+            label: '请输入 Logto App Secret',
+            placeholder: 'your_app_secret',
+            required: true,
+            validate: fn(string $value): ?string => match (true) {
+                strlen($value) < 20 => 'App Secret 长度不能少于 20 个字符',
+                default => null,
+            }
+        );
+
+        $this->info('');
+        $this->info('✅ Logto 配置完成');
+        $this->info('');
+
+        return [
+            'LOGTO_ENDPOINT' => $logtoEndpoint,
+            'LOGTO_APP_ID' => $logtoAppId,
+            'LOGTO_APP_SECRET' => $logtoAppSecret,
+            'LOGTO_AUTO_CREATE_USER' => 'true',
+            'LOGTO_AUTO_UPDATE_USER' => 'true',
+        ];
     }
 
     /**

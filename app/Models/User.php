@@ -13,9 +13,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  *
  * @property int $id 用户ID
  * @property string $email 邮箱
- * @property string $password 密码
+ * @property string|null $password 密码
  * @property string|null $password_algo 加密方式
  * @property string|null $password_salt 加密盐
+ * @property string|null $logto_sub Logto用户ID
+ * @property string $auth_provider 认证提供商
  * @property string $token 邀请码
  * @property string $uuid
  * @property int|null $invite_user_id 邀请人
@@ -81,6 +83,41 @@ class User extends Authenticatable
     public const COMMISSION_TYPE_SYSTEM = 0;
     public const COMMISSION_TYPE_PERIOD = 1;
     public const COMMISSION_TYPE_ONETIME = 2;
+
+    // Authentication providers
+    public const AUTH_PROVIDER_LOCAL = 'local';
+    public const AUTH_PROVIDER_LOGTO = 'logto';
+
+    /**
+     * Find user by Logto sub (subject identifier)
+     *
+     * @param string $sub Logto user ID
+     * @return User|null
+     */
+    public static function findByLogtoSub(string $sub): ?self
+    {
+        return static::where('logto_sub', $sub)->first();
+    }
+
+    /**
+     * Check if user is authenticated via Logto
+     *
+     * @return bool
+     */
+    public function isLogtoUser(): bool
+    {
+        return $this->auth_provider === self::AUTH_PROVIDER_LOGTO;
+    }
+
+    /**
+     * Check if user is authenticated via local credentials
+     *
+     * @return bool
+     */
+    public function isLocalUser(): bool
+    {
+        return $this->auth_provider === self::AUTH_PROVIDER_LOCAL;
+    }
 
     // 获取邀请人信息
     public function invite_user(): BelongsTo
