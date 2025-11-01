@@ -1,0 +1,188 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate changelog
+        id: changelog
+        uses: metcalfc/changelog-generator@v4.1.0
+        with:
+          myToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release Notes
+        id: release_notes
+        run: |
+          cat > release_notes.md << 'EOF'
+          ## 🎉 Xboard ${{ steps.version.outputs.version }}
+
+          ### ✨ 新功能
+
+          - 查看完整的变更日志了解所有更新
+
+          ### 🐛 Bug 修复
+
+          - 查看提交历史了解详细信息
+
+          ### 📦 安装方式
+
+          #### Docker Compose（推荐）
+          \`\`\`bash
+          git clone -b compose --depth 1 https://github.com/cedar2025/Xboard
+          cd Xboard
+          docker compose run -it --rm \
+              -e ENABLE_SQLITE=true \
+              -e ENABLE_REDIS=true \
+              web php artisan xboard:install
+          docker compose up -d
+          \`\`\`
+
+          #### Docker 镜像
+          \`\`\`bash
+          docker pull ghcr.io/cedar2025/xboard:${{ steps.version.outputs.version }}
+          \`\`\`
+
+          ### 📚 文档
+
+          - [安装指南](https://github.com/cedar2025/Xboard/blob/master/INSTALLATION_GUIDE.md)
+          - [Logto 设置](https://github.com/cedar2025/Xboard/blob/master/LOGTO_SETUP.md)
+          - [完整文档](https://github.com/cedar2025/Xboard/blob/master/README_CN.md)
+
+          ### ⚠️ 重要提示
+
+          1. **备份数据**：升级前请务必备份数据库和配置文件
+          2. **Logto 配置**：首次安装需要配置 Logto 认证
+          3. **首次登录**：安装后立即完成首次登录以获取管理员权限
+
+          ### 🔄 升级指南
+
+          \`\`\`bash
+          # 停止服务
+          docker compose down
+
+          # 备份数据
+          cp database/database.sqlite database/database.sqlite.backup
+          ./scripts/backup-redis.sh
+
+          # 拉取最新代码
+          git pull
+
+          # 拉取最新镜像
+          docker compose pull
+
+          # 运行迁移
+          docker compose run --rm web php artisan migrate --force
+
+          # 启动服务
+          docker compose up -d
+          \`\`\`
+
+          ### 📝 完整变更日志
+
+          ${{ steps.changelog.outputs.changelog }}
+
+          ---
+
+          **完整变更**: https://github.com/cedar2025/Xboard/compare/${{ steps.version.outputs.version }}...master
+          EOF
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: Release ${{ steps.version.outputs.version }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-release-assets:
+    name: Build Release Assets
+    runs-on: ubuntu-latest
+    needs: create-release
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Create release archive
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          tar -czf xboard-${VERSION}.tar.gz \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='node_modules' \
+            --exclude='tests' \
+            --exclude='.env' \
+            .
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: xboard-*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  notify:
+    name: Send Notifications
+    runs-on: ubuntu-latest
+    needs: [create-release, build-release-assets]
+    if: always()
+    
+    steps:
+      - name: Get version
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Notification
+        run: |
+          if [ "${{ needs.create-release.result }}" == "success" ] && \
+             [ "${{ needs.build-release-assets.result }}" == "success" ]; then
+            echo "✅ Release ${{ steps.version.outputs.version }} created successfully"
+            echo "📦 Download: https://github.com/cedar2025/Xboard/releases/tag/${{ steps.version.outputs.version }}"
+          else
+            echo "❌ Release creation failed"
+            exit 1
+          fi

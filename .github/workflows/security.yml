@@ -1,0 +1,129 @@
+name: Security Scan
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 每天 UTC 00:00
+  pull_request:
+    branches: [master, dev]
+  workflow_dispatch:
+
+jobs:
+  dependency-scan:
+    name: Dependency Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Composer security audit
+        run: composer audit --format=json || true
+
+      - name: Check for known vulnerabilities
+        run: |
+          composer require --dev enlightn/security-checker
+          vendor/bin/security-checker security:check composer.lock --format=json || true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: npm audit
+        if: hashFiles('package-lock.json') != ''
+        run: |
+          npm ci
+          npm audit --audit-level=moderate || true
+
+  code-scan:
+    name: Code Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner in repo mode
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Check for secrets
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified
+
+  docker-scan:
+    name: Docker Image Security Scan
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t xboard:test .
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'xboard:test'
+          format: 'sarif'
+          output: 'trivy-image-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-image-results.sarif'
+
+      - name: Run Dockle
+        uses: erzz/dockle-action@v1
+        with:
+          image: 'xboard:test'
+          exit-code: '0'
+          failure-threshold: 'high'
+
+  summary:
+    name: Security Summary
+    runs-on: ubuntu-latest
+    needs: [dependency-scan, code-scan]
+    if: always()
+    
+    steps:
+      - name: Check results
+        run: |
+          echo "Dependency Scan: ${{ needs.dependency-scan.result }}"
+          echo "Code Scan: ${{ needs.code-scan.result }}"
+          
+          if [ "${{ needs.dependency-scan.result }}" == "failure" ] || \
+             [ "${{ needs.code-scan.result }}" == "failure" ]; then
+            echo "⚠️  Security issues detected"
+            exit 1
+          else
+            echo "✅ No critical security issues found"
+          fi

@@ -1,0 +1,215 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [master, dev]
+  push:
+    branches: [master, dev]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, ctype, json, bcmath, redis
+          coverage: none
+          tools: composer:v2
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Check PHP syntax
+        run: find app -name "*.php" -print0 | xargs -0 -n1 php -l
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse --memory-limit=2G
+
+      - name: Check code style (PHP CS Fixer)
+        run: |
+          composer require --dev friendsofphp/php-cs-fixer
+          vendor/bin/php-cs-fixer fix --dry-run --diff --verbose
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+  tests:
+    name: Tests (PHP ${{ matrix.php }}, ${{ matrix.db }})
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3']
+        db: ['sqlite', 'mysql']
+        include:
+          - php: '8.2'
+            db: 'pgsql'
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: xboard_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: xboard_test
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, xml, ctype, json, bcmath, redis, pdo_mysql, pdo_pgsql, pdo_sqlite
+          coverage: xdebug
+          tools: composer:v2
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Copy environment file
+        run: cp .env.example .env
+
+      - name: Generate application key
+        run: php artisan key:generate
+
+      - name: Configure database
+        run: |
+          if [ "${{ matrix.db }}" == "mysql" ]; then
+            echo "DB_CONNECTION=mysql" >> .env
+            echo "DB_HOST=127.0.0.1" >> .env
+            echo "DB_PORT=3306" >> .env
+            echo "DB_DATABASE=xboard_test" >> .env
+            echo "DB_USERNAME=root" >> .env
+            echo "DB_PASSWORD=password" >> .env
+          elif [ "${{ matrix.db }}" == "pgsql" ]; then
+            echo "DB_CONNECTION=pgsql" >> .env
+            echo "DB_HOST=127.0.0.1" >> .env
+            echo "DB_PORT=5432" >> .env
+            echo "DB_DATABASE=xboard_test" >> .env
+            echo "DB_USERNAME=postgres" >> .env
+            echo "DB_PASSWORD=password" >> .env
+          else
+            echo "DB_CONNECTION=sqlite" >> .env
+            echo "DB_DATABASE=:memory:" >> .env
+          fi
+
+      - name: Configure Redis
+        run: |
+          echo "REDIS_HOST=127.0.0.1" >> .env
+          echo "REDIS_PORT=6379" >> .env
+          echo "CACHE_DRIVER=redis" >> .env
+          echo "QUEUE_CONNECTION=redis" >> .env
+
+      - name: Run migrations
+        run: php artisan migrate --force
+
+      - name: Run tests
+        run: vendor/bin/phpunit --coverage-clover coverage.xml
+
+      - name: Upload coverage to Codecov
+        if: matrix.php == '8.2' && matrix.db == 'mysql'
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+  security:
+    name: Security Checks
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, ctype, json
+          coverage: none
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Security audit (Composer)
+        run: composer audit
+
+      - name: Check for known vulnerabilities
+        run: |
+          composer require --dev enlightn/security-checker
+          vendor/bin/security-checker security:check composer.lock
+
+  summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    needs: [code-quality, tests, security]
+    if: always()
+    
+    steps:
+      - name: Check results
+        run: |
+          if [ "${{ needs.code-quality.result }}" != "success" ] || \
+             [ "${{ needs.tests.result }}" != "success" ] || \
+             [ "${{ needs.security.result }}" != "success" ]; then
+            echo "❌ CI checks failed"
+            exit 1
+          else
+            echo "✅ All CI checks passed"
+          fi
