@@ -1,5 +1,10 @@
 FROM phpswoole/swoole:php8.2-alpine
 
+# OCI Labels for GitHub Container Registry
+LABEL org.opencontainers.image.source="https://github.com/ElinksTeam/ElinksBoard"
+LABEL org.opencontainers.image.description="ElinksBoard - A modern proxy panel based on Laravel and Swoole"
+LABEL org.opencontainers.image.licenses="MIT"
+
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
 # Install PHP extensions one by one with lower optimization level for ARM64 compatibility
