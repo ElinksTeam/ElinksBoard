@@ -1,56 +1,56 @@
-# Database Decentralization Analysis for Xboard
+# Xboard 数据库去中心化分析
 
-## 📊 Current Architecture
+## 📊 当前架构
 
-### Database Structure
+### 数据库结构
 
-Xboard uses a **centralized relational database** (MySQL/PostgreSQL/SQLite) with the following key tables:
+Xboard 使用**中心化关系数据库**（MySQL/PostgreSQL/SQLite），包含以下关键表：
 
-**Core Tables:**
-- `v2_user` - User accounts and profiles
-- `v2_order` - Purchase orders
-- `v2_payment` - Payment records
-- `v2_plan` - Subscription plans
-- `v2_server` - Proxy server nodes
-- `v2_server_stat` - Server statistics
-- `v2_stat_user` - User traffic statistics
-- `v2_settings` - System configuration
+**核心表：**
+- `v2_user` - 用户账号和资料
+- `v2_order` - 购买订单
+- `v2_payment` - 支付记录
+- `v2_plan` - 订阅计划
+- `v2_server` - 代理服务器节点
+- `v2_server_stat` - 服务器统计
+- `v2_stat_user` - 用户流量统计
+- `v2_settings` - 系统配置
 
-**Characteristics:**
-- Strong ACID compliance
-- Complex relationships (foreign keys)
-- Real-time consistency requirements
-- High transaction volume
-- Frequent reads and writes
-
----
-
-## 🤔 Can Database Be Decentralized?
-
-### Short Answer: **Partially, with significant trade-offs**
-
-### Long Answer:
-
-Database decentralization for Xboard is **technically possible** but comes with **major challenges** due to the nature of the application:
-
-#### ✅ Feasible Aspects
-
-1. **User Authentication** - Already decentralized via Logto
-2. **Static Content** - Plans, knowledge base, notices
-3. **Server Nodes** - Distributed by nature
-4. **Logs and Analytics** - Can be distributed
-
-#### ❌ Challenging Aspects
-
-1. **Financial Transactions** - Require strong consistency
-2. **User Balances** - Need atomic operations
-3. **Order Processing** - Complex state management
-4. **Traffic Accounting** - Real-time updates
-5. **Commission Calculations** - Require accuracy
+**特点：**
+- 强 ACID 合规性
+- 复杂关系（外键）
+- 实时一致性要求
+- 高事务量
+- 频繁读写
 
 ---
 
-## 🔍 Decentralization Options
+## 🤔 数据库能否去中心化？
+
+### 简短回答：**部分可以，但有重大权衡**
+
+### 详细回答：
+
+Xboard 的数据库去中心化在**技术上是可能的**，但由于应用程序的性质，会面临**重大挑战**：
+
+#### ✅ 可行的方面
+
+1. **用户认证** - 已通过 Logto 去中心化
+2. **静态内容** - 计划、知识库、公告
+3. **服务器节点** - 本质上是分布式的
+4. **日志和分析** - 可以分布式
+
+#### ❌ 具有挑战性的方面
+
+1. **金融交易** - 需要强一致性
+2. **用户余额** - 需要原子操作
+3. **订单处理** - 复杂的状态管理
+4. **流量计费** - 实时更新
+5. **佣金计算** - 需要准确性
+
+---
+
+## 🔍 去中心化选项
 
 ### Option 1: Blockchain-Based (Not Recommended)
 
@@ -189,7 +189,7 @@ Blockchain is designed for trustless environments. Xboard is a **trusted applica
 
 ---
 
-## 💡 Recommended Implementation
+## 💡 推荐实施方案
 
 ### Phase 1: Optimize Current Setup (Immediate)
 
@@ -291,7 +291,7 @@ DB_HOST=cockroach-cluster
 
 ---
 
-## 🎯 Practical Recommendations
+## 🎯 实用建议
 
 ### For Small to Medium Deployments (< 10K users)
 
@@ -341,7 +341,7 @@ DB_HOST=cockroach-cluster
 
 ---
 
-## ⚠️ Why NOT to Decentralize
+## ⚠️ 为什么不要去中心化
 
 ### Common Misconceptions
 
@@ -367,7 +367,7 @@ DB_HOST=cockroach-cluster
 
 ---
 
-## 🔧 Implementation Guide
+## 🔧 实施指南
 
 ### If You Still Want to Decentralize
 
@@ -415,7 +415,7 @@ Week 7-8: Test and optimize
 
 ---
 
-## 📊 Cost Comparison
+## 📊 成本对比
 
 ### Centralized (Current)
 
@@ -451,7 +451,7 @@ Complexity: High
 
 ---
 
-## 🎓 Learning Resources
+## 🎓 学习资源
 
 ### If You Want to Learn More
 
@@ -470,7 +470,7 @@ Complexity: High
 
 ---
 
-## 🎯 Final Recommendation
+## 🎯 最终建议
 
 ### For Xboard Specifically:
 
@@ -493,7 +493,7 @@ Complexity: High
 
 ---
 
-## 💬 Questions to Ask Yourself
+## 💬 需要问自己的问题
 
 Before decentralizing:
 
@@ -514,7 +514,7 @@ Before decentralizing:
 
 ---
 
-## ✅ Conclusion
+## ✅ 结论
 
 **Database decentralization for Xboard:**
 

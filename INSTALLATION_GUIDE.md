@@ -1,61 +1,61 @@
-# Xboard Installation Guide with Logto
+# Xboard 安装指南（集成 Logto）
 
-## 🚀 Quick Installation
+## 🚀 快速安装
 
-### Prerequisites
+### 系统要求
 
 - PHP 8.2+
 - MySQL 5.7+ / PostgreSQL / SQLite
 - Redis
 - Composer
-- Logto account (Cloud or self-hosted)
+- Logto 账号（云端或自托管）
 
 ---
 
-## 📋 Installation Steps
+## 📋 安装步骤
 
-### Step 1: Clone Repository
+### 步骤 1：克隆仓库
 
 ```bash
 git clone https://github.com/ElinksTeam/Xboard.git
 cd Xboard
 ```
 
-### Step 2: Install Dependencies
+### 步骤 2：安装依赖
 
 ```bash
 composer install
 ```
 
-### Step 3: Run Installation Command
+### 步骤 3：运行安装命令
 
 ```bash
 php artisan xboard:install
 ```
 
-### Step 4: Follow Installation Wizard
+### 步骤 4：按照安装向导操作
 
-The installation wizard will guide you through:
+安装向导将引导您完成以下配置：
 
-#### 4.1 Database Configuration
+#### 4.1 数据库配置
 
-Choose your database type:
-- **SQLite** (Recommended for testing)
+选择数据库类型：
+- **SQLite**（推荐用于测试）
 - **MySQL**
 - **PostgreSQL**
 
-Enter connection details when prompted.
+根据提示输入连接详情。
 
-#### 4.2 Redis Configuration
+#### 4.2 Redis 配置
 
-Enter Redis connection details:
-- Host (default: 127.0.0.1)
-- Port (default: 6379)
-- Password (optional)
+输入 Redis 连接详情：
+- 主机（默认：127.0.0.1）
+- 端口（默认：6379）
+- 密码（可选）
 
-#### 4.3 Logto Configuration ⭐ **REQUIRED**
+#### 4.3 Logto 配置 ⭐ **必需**
 
-You will be prompted to configure Logto:
+系统将提示您配置 Logto：
 
 ```
 🔐 配置 Logto 认证系统
@@ -71,14 +71,14 @@ Logto 是现代化的身份认证服务，支持 SSO、MFA、社交登录等功�
 > your_app_secret_here
 ```
 
-**Where to get these values:**
-1. Visit [Logto Console](https://cloud.logto.io) or your self-hosted instance
-2. Create a new **Traditional Web Application**
-3. Copy the **Endpoint**, **App ID**, and **App Secret**
+**如何获取这些值：**
+1. 访问 [Logto 控制台](https://cloud.logto.io) 或您的自托管实例
+2. 创建一个新的 **传统 Web 应用程序**
+3. 复制 **Endpoint**、**App ID** 和 **App Secret**
 
-#### 4.4 Installation Complete
+#### 4.4 安装完成
 
-You will see:
+您将看到：
 
 ```
 🎉：一切就绪
@@ -104,136 +104,136 @@ You will see:
 
 ---
 
-## 🔧 Post-Installation Configuration
+## 🔧 安装后配置
 
-### Step 5: Configure Logto Console
+### 步骤 5：配置 Logto 控制台
 
-**IMPORTANT:** Before first login, configure Logto Console:
+**重要：** 在首次登录前，配置 Logto 控制台：
 
-1. Go to your Logto application settings
-2. Add **Redirect URI**:
+1. 进入您的 Logto 应用程序设置
+2. 添加 **重定向 URI**：
    ```
    http://your-domain.com/api/v1/passport/auth/logto/callback
    ```
-3. Add **Post Sign-out Redirect URI**:
+3. 添加 **登出后重定向 URI**：
    ```
    http://your-domain.com
    ```
-4. Save changes
+4. 保存更改
 
-### Step 6: Complete First Login ⚠️ **CRITICAL**
+### 步骤 6：完成首次登录 ⚠️ **关键**
 
-**The first user to login will automatically become the administrator!**
+**首次登录的用户将自动成为管理员！**
 
-1. Visit your Xboard site: `http://your-domain.com`
-2. Click "Sign in with Logto"
-3. Complete Logto authentication
-4. You will be redirected back with admin privileges
+1. 访问您的 Xboard 站点：`http://your-domain.com`
+2. 点击"使用 Logto 登录"
+3. 完成 Logto 认证
+4. 您将被重定向回来并获得管理员权限
 
-**Security Warning:**
-- Do this **immediately** after installation
-- Anyone who completes the first login becomes admin
-- Subsequent users will be regular users
-
----
-
-## 🎯 First User Becomes Admin
-
-### How It Works
-
-```
-Installation Complete
-        ↓
-First User Logs In via Logto
-        ↓
-System Checks: User Count = 0?
-        ↓
-    YES → Grant Admin (is_admin = 1)
-    NO  → Regular User (is_admin = 0)
-```
-
-### Admin Privileges
-
-The first user gets:
-- ✅ Full admin panel access
-- ✅ Logto configuration management
-- ✅ User management
-- ✅ System settings
-- ✅ All administrative features
-
-### Regular Users
-
-Subsequent users get:
-- ✅ User dashboard access
-- ✅ Service subscription
-- ✅ Profile management
-- ❌ No admin panel access
+**安全警告：**
+- 安装后**立即**完成此操作
+- 任何完成首次登录的人都将成为管理员
+- 后续用户将是普通用户
 
 ---
 
-## 🔐 Security Best Practices
+## 🎯 首次用户成为管理员
 
-### 1. Complete First Login Immediately
+### 工作原理
 
-```bash
-# Right after installation:
-# 1. Configure Logto Console
-# 2. Visit your site
-# 3. Login with YOUR account
-# 4. Verify admin access
+```
+安装完成
+    ↓
+首次用户通过 Logto 登录
+    ↓
+系统检查：用户数 = 0？
+    ↓
+是 → 授予管理员权限 (is_admin = 1)
+否 → 普通用户 (is_admin = 0)
 ```
 
-### 2. Secure Your Logto Account
+### 管理员权限
 
-- Use strong password
-- Enable MFA in Logto
-- Restrict Logto application access
-- Monitor Logto audit logs
+首次用户获得：
+- ✅ 完整的管理面板访问权限
+- ✅ Logto 配置管理
+- ✅ 用户管理
+- ✅ 系统设置
+- ✅ 所有管理功能
 
-### 3. Configure HTTPS
+### 普通用户
+
+后续用户获得：
+- ✅ 用户仪表板访问权限
+- ✅ 服务订阅
+- ✅ 个人资料管理
+- ❌ 无管理面板访问权限
+
+---
+
+## 🔐 安全最佳实践
+
+### 1. 立即完成首次登录
 
 ```bash
-# Update .env
+# 安装后立即：
+# 1. 配置 Logto 控制台
+# 2. 访问您的站点
+# 3. 使用您的账号登录
+# 4. 验证管理员访问权限
+```
+
+### 2. 保护您的 Logto 账号
+
+- 使用强密码
+- 在 Logto 中启用 MFA
+- 限制 Logto 应用程序访问
+- 监控 Logto 审计日志
+
+### 3. 配置 HTTPS
+
+```bash
+# 更新 .env
 APP_URL=https://your-domain.com
 
-# Update Logto Console URIs to use HTTPS
+# 更新 Logto 控制台 URI 使用 HTTPS
 ```
 
-### 4. Secure Admin Path
+### 4. 保护管理员路径
 
-The admin path is automatically generated as a hash. Keep it secret:
+管理员路径自动生成为哈希值。请保密：
 
 ```
-Admin Panel: https://your-domain.com/{random-hash}
+管理面板：https://your-domain.com/{随机哈希}
 ```
 
 ---
 
-## 🧪 Testing Installation
+## 🧪 测试安装
 
-### Test 1: Check Installation
+### 测试 1：检查安装状态
 
 ```bash
-# Check if installed
+# 检查是否已安装
 cat .env | grep INSTALLED
-# Should show: INSTALLED=true
+# 应显示：INSTALLED=true
 ```
 
-### Test 2: Check Logto Configuration
+### 测试 2：检查 Logto 配置
 
 ```bash
-# Check Logto settings
+# 检查 Logto 设置
 cat .env | grep LOGTO
-# Should show your Logto configuration
+# 应显示您的 Logto 配置
 ```
 
-### Test 3: Test Sign-in URL
+### 测试 3：测试登录 URL
 
 ```bash
 curl http://your-domain.com/api/v1/passport/auth/logto/sign-in
 ```
 
-Expected response:
+预期响应：
 ```json
 {
   "code": 0,
@@ -244,177 +244,177 @@ Expected response:
 }
 ```
 
-### Test 4: Complete First Login
+### 测试 4：完成首次登录
 
-1. Visit your site
-2. Click sign-in
-3. Authenticate with Logto
-4. Check response includes `"is_admin": true`
+1. 访问您的站点
+2. 点击登录
+3. 使用 Logto 认证
+4. 检查响应包含 `"is_admin": true`
 
 ---
 
-## 🔄 Troubleshooting
+## 🔄 故障排查
 
-### Issue: "Logto 认证系统未配置"
+### 问题："Logto 认证系统未配置"
 
-**Cause:** Logto configuration missing or invalid
+**原因：** Logto 配置缺失或无效
 
-**Solution:**
-1. Check `.env` file has Logto variables
-2. Run `php artisan config:cache`
-3. Verify Logto credentials are correct
+**解决方案：**
+1. 检查 `.env` 文件是否包含 Logto 变量
+2. 运行 `php artisan config:cache`
+3. 验证 Logto 凭据是否正确
 
-### Issue: "Invalid redirect URI"
+### 问题："Invalid redirect URI"（无效的重定向 URI）
 
-**Cause:** Redirect URI mismatch
+**原因：** 重定向 URI 不匹配
 
-**Solution:**
-1. Check Logto Console redirect URI matches exactly
-2. Ensure no trailing slashes
-3. Use correct protocol (http/https)
+**解决方案：**
+1. 检查 Logto 控制台中的重定向 URI 是否完全匹配
+2. 确保没有尾部斜杠
+3. 使用正确的协议（http/https）
 
-### Issue: "Connection test failed"
+### 问题："Connection test failed"（连接测试失败）
 
-**Cause:** Cannot reach Logto endpoint
+**原因：** 无法访问 Logto 端点
 
-**Solution:**
-1. Verify Logto endpoint URL is correct
-2. Check network connectivity
-3. Verify firewall rules
-4. Test endpoint in browser
+**解决方案：**
+1. 验证 Logto 端点 URL 是否正确
+2. 检查网络连接
+3. 验证防火墙规则
+4. 在浏览器中测试端点
 
-### Issue: "First login didn't grant admin"
+### 问题："首次登录未授予管理员权限"
 
-**Cause:** Another user logged in first
+**原因：** 其他用户先登录了
 
-**Solution:**
-1. Check database: `SELECT * FROM v2_user WHERE is_admin = 1;`
-2. If wrong user is admin, manually update:
+**解决方案：**
+1. 检查数据库：`SELECT * FROM v2_user WHERE is_admin = 1;`
+2. 如果错误的用户是管理员，手动更新：
    ```sql
-   UPDATE v2_user SET is_admin = 0 WHERE id = {wrong_user_id};
-   UPDATE v2_user SET is_admin = 1 WHERE id = {correct_user_id};
+   UPDATE v2_user SET is_admin = 0 WHERE id = {错误用户ID};
+   UPDATE v2_user SET is_admin = 1 WHERE id = {正确用户ID};
    ```
 
 ---
 
-## 📊 Verification Checklist
+## 📊 验证清单
 
-After installation, verify:
+安装后，请验证：
 
-- [ ] Installation completed successfully
-- [ ] Logto configured in `.env`
-- [ ] Logto Console redirect URIs configured
-- [ ] First login completed
-- [ ] Admin privileges granted
-- [ ] Can access admin panel
-- [ ] Can modify Logto settings in admin panel
-- [ ] Regular users can sign up
-- [ ] Regular users don't have admin access
-
----
-
-## 🎨 Next Steps
-
-### 1. Configure System Settings
-
-Login to admin panel and configure:
-- Site name and description
-- Email settings
-- Payment methods
-- Subscription plans
-
-### 2. Customize Logto
-
-In Logto Console:
-- Add social login providers (Google, GitHub, etc.)
-- Enable MFA
-- Customize sign-in page
-- Configure password policy
-
-### 3. Deploy Frontend
-
-Update frontend to use Logto authentication:
-- See `docs/FRONTEND_LOGTO_INTEGRATION.md`
-- Remove traditional login forms
-- Add Logto sign-in button
-- Implement callback handler
-
-### 4. Test Complete Flow
-
-1. Test user registration via Logto
-2. Test user login
-3. Test admin panel access
-4. Test Logto settings modification
-5. Test user permissions
+- [ ] 安装成功完成
+- [ ] Logto 已在 `.env` 中配置
+- [ ] Logto 控制台重定向 URI 已配置
+- [ ] 首次登录已完成
+- [ ] 管理员权限已授予
+- [ ] 可以访问管理面板
+- [ ] 可以在管理面板中修改 Logto 设置
+- [ ] 普通用户可以注册
+- [ ] 普通用户没有管理员访问权限
 
 ---
 
-## 📚 Additional Resources
+## 🎨 后续步骤
 
-- **Quick Setup:** `LOGTO_SETUP.md`
-- **Complete Guide:** `docs/LOGTO_INTEGRATION.md`
-- **Frontend Guide:** `docs/FRONTEND_LOGTO_INTEGRATION.md`
-- **Changes Summary:** `LOGTO_CHANGES.md`
-- **Logto Documentation:** https://docs.logto.io
+### 1. 配置系统设置
+
+登录管理面板并配置：
+- 站点名称和描述
+- 邮件设置
+- 支付方式
+- 订阅计划
+
+### 2. 自定义 Logto
+
+在 Logto 控制台中：
+- 添加社交登录提供商（Google、GitHub 等）
+- 启用 MFA
+- 自定义登录页面
+- 配置密码策略
+
+### 3. 部署前端
+
+更新前端以使用 Logto 认证：
+- 参见 `docs/FRONTEND_LOGTO_INTEGRATION.md`
+- 移除传统登录表单
+- 添加 Logto 登录按钮
+- 实现回调处理程序
+
+### 4. 测试完整流程
+
+1. 测试通过 Logto 注册用户
+2. 测试用户登录
+3. 测试管理面板访问
+4. 测试 Logto 设置修改
+5. 测试用户权限
 
 ---
 
-## 🆘 Getting Help
+## 📚 其他资源
 
-If you encounter issues:
+- **快速设置：** `LOGTO_SETUP.md`
+- **完整指南：** `docs/LOGTO_INTEGRATION.md`
+- **前端指南：** `docs/FRONTEND_LOGTO_INTEGRATION.md`
+- **变更摘要：** `LOGTO_CHANGES.md`
+- **Logto 文档：** https://docs.logto.io
 
-1. **Check Logs**
+---
+
+## 🆘 获取帮助
+
+如果遇到问题：
+
+1. **检查日志**
    ```bash
    tail -f storage/logs/laravel.log
    ```
 
-2. **Enable Debug Mode**
+2. **启用调试模式**
    ```env
    APP_DEBUG=true
    LOG_LEVEL=debug
    ```
 
-3. **Verify Configuration**
+3. **验证配置**
    ```bash
    php artisan config:show logto
    ```
 
-4. **Test Connection**
-   - Login to admin panel
-   - Go to Logto settings
-   - Click "Test Connection"
+4. **测试连接**
+   - 登录管理面板
+   - 进入 Logto 设置
+   - 点击"测试连接"
 
-5. **Community Support**
+5. **社区支持**
    - GitHub Issues
    - Logto Discord
-   - Documentation
+   - 文档
 
 ---
 
-## ⚠️ Important Notes
+## ⚠️ 重要说明
 
-1. **No Default Admin Account**
-   - No default username/password
-   - First login creates admin
-   - Cannot create admin manually
+1. **没有默认管理员账号**
+   - 没有默认用户名/密码
+   - 首次登录创建管理员
+   - 无法手动创建管理员
 
-2. **All Users Use Logto**
-   - No traditional login
-   - No password management in Xboard
-   - All authentication via Logto
+2. **所有用户使用 Logto**
+   - 没有传统登录
+   - Xboard 中没有密码管理
+   - 所有认证通过 Logto
 
-3. **Admin Path is Random**
-   - Generated during installation
-   - Keep it secret
-   - Can be changed in settings
+3. **管理员路径是随机的**
+   - 安装时生成
+   - 请保密
+   - 可在设置中更改
 
-4. **First Login is Critical**
-   - Determines who becomes admin
-   - Cannot be undone easily
-   - Complete immediately after installation
+4. **首次登录至关重要**
+   - 决定谁成为管理员
+   - 不易撤销
+   - 安装后立即完成
 
 ---
 
-**Installation Complete!** 🎉
+**安装完成！** 🎉
 
-Remember to complete your first login immediately to secure admin access.
+记得立即完成首次登录以确保管理员访问权限。

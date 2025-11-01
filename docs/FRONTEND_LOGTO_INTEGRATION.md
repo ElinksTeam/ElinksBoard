@@ -1,10 +1,10 @@
-# Frontend Logto Integration Guide
+# 前端 Logto 集成指南
 
-## Overview
+## 概述
 
-This guide explains how to integrate Logto authentication into the Xboard frontend (Vue3).
+本指南说明如何将 Logto 认证集成到 Xboard 前端（Vue3）。
 
-## Changes Required
+## 需要的变更
 
 ### 1. Remove Traditional Login Form
 
@@ -529,7 +529,7 @@ h1 {
 </style>
 ```
 
-## Testing
+## 测试
 
 ### 1. Test Sign-in Flow
 
@@ -553,7 +553,7 @@ h1 {
 2. Should redirect to login page
 3. After login, should be able to access dashboard
 
-## Error Handling
+## 错误处理
 
 ### Common Errors
 
@@ -569,7 +569,7 @@ h1 {
    - Network error or invalid credentials
    - Check browser console for details
 
-## Migration Checklist
+## 迁移检查清单
 
 - [ ] Remove traditional login form components
 - [ ] Create `useLogtoAuth` composable
@@ -583,7 +583,7 @@ h1 {
 - [ ] Update user profile components
 - [ ] Remove password change functionality (handled by Logto)
 
-## Notes
+## 注意事项
 
 1. **No Password Management**: Users manage passwords through Logto
 2. **No Registration Form**: Users register through Logto
@@ -591,7 +591,7 @@ h1 {
 4. **Session Management**: Handled by Logto + Sanctum tokens
 5. **User Profile**: Basic info from Logto, business data from Xboard
 
-## Support
+## 支持
 
 For issues or questions:
 - Check browser console for errors

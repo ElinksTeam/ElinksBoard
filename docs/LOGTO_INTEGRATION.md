@@ -1,8 +1,8 @@
-# Logto Integration Guide
+# Logto 集成指南
 
-This document describes how to integrate Logto authentication into Xboard.
+本文档描述如何将 Logto 认证集成到 Xboard。
 
-## Overview
+## 概述
 
 Xboard now supports Logto as an authentication provider, offering:
 - OAuth 2.0 + OpenID Connect (OIDC) authentication
@@ -11,7 +11,7 @@ Xboard now supports Logto as an authentication provider, offering:
 - Social login providers
 - Enterprise SSO (SAML)
 
-## Architecture
+## 架构
 
 ```
 ┌─────────────┐         ┌──────────────┐         ┌─────────────┐
@@ -24,7 +24,7 @@ Xboard now supports Logto as an authentication provider, offering:
                         User Authentication       Business Data
 ```
 
-## Installation
+## 安装
 
 ### 1. Install Logto SDK
 
@@ -59,7 +59,7 @@ This will add the following fields to the `v2_user` table:
 - `logto_sub`: Logto user ID (unique identifier)
 - `auth_provider`: Authentication provider ('local' or 'logto')
 
-## Logto Console Configuration
+## Logto 控制台配置
 
 ### 1. Create Application
 
@@ -91,7 +91,7 @@ Copy the following from your Logto application:
 - **App Secret** → `LOGTO_APP_SECRET`
 - **Endpoint** → `LOGTO_ENDPOINT`
 
-## API Endpoints
+## API 端点
 
 ### Authentication Flow
 
@@ -212,7 +212,7 @@ Checks if the user is authenticated with Logto.
 }
 ```
 
-## Frontend Integration
+## 前端集成
 
 ### Vue 3 Example
 
@@ -315,7 +315,7 @@ onMounted(async () => {
 </script>
 ```
 
-## User Synchronization
+## 用户同步
 
 ### Auto-Create Users
 
@@ -346,7 +346,7 @@ When `LOGTO_AUTO_UPDATE_USER=true`, user information is updated from Logto on ea
 
 If a user with the same email exists in the local database (from traditional auth), they will be automatically linked to the Logto account on first Logto login.
 
-## Database Schema
+## 数据库架构
 
 ### New Fields in `v2_user` Table
 
@@ -360,7 +360,7 @@ If a user with the same email exists in the local database (from traditional aut
 - `idx_logto_sub` on `logto_sub`
 - `idx_auth_provider` on `auth_provider`
 
-## Security Considerations
+## 安全考虑
 
 ### Token Management
 
@@ -379,7 +379,7 @@ If a user with the same email exists in the local database (from traditional aut
 - Logto uses `state` parameter for CSRF protection
 - Laravel CSRF middleware is applied to sign-out endpoint
 
-## Troubleshooting
+## 故障排查
 
 ### Common Issues
 
@@ -412,7 +412,7 @@ LOG_LEVEL=debug
 
 Check logs in `storage/logs/laravel.log` for detailed error messages.
 
-## Advanced Configuration
+## 高级配置
 
 ### Custom Scopes
 
@@ -449,7 +449,7 @@ Use custom storage instead of PHP session:
 'storage' => 'cache', // or 'database'
 ```
 
-## Migration from Local Auth
+## 从本地认证迁移
 
 ### For Existing Users
 
@@ -463,7 +463,7 @@ Use custom storage instead of PHP session:
 2. Only show Logto sign-in button
 3. Keep local auth for admin accounts (optional)
 
-## Testing
+## 测试
 
 ### Manual Testing
 
@@ -483,13 +483,13 @@ curl http://localhost/api/v1/passport/auth/logto/sign-in
 curl http://localhost/api/v1/passport/auth/logto/check
 ```
 
-## Support
+## 支持
 
 For issues or questions:
 - Check [Logto Documentation](https://docs.logto.io)
 - Review logs in `storage/logs/laravel.log`
 - Open an issue on GitHub
 
-## License
+## 许可证
 
 This integration follows the same MIT license as Xboard.

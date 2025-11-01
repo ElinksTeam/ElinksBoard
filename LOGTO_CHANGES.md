@@ -1,54 +1,54 @@
-# Logto Integration - Complete Changes Summary
+# Logto 集成 - 完整变更摘要
 
-## 🎯 Overview
+## 🎯 概述
 
-Xboard has been fully integrated with Logto authentication system. Traditional email/password login has been removed, and all user authentication now goes through Logto.
-
----
-
-## 📋 What Changed
-
-### ✅ Added Features
-
-1. **Logto Authentication System**
-   - OAuth 2.0 + OpenID Connect (OIDC) authentication
-   - Automatic user synchronization
-   - Support for SSO, MFA, and social logins
-   - Configurable through admin panel
-
-2. **Installation Process**
-   - Logto configuration is now part of the installation wizard
-   - Prompts for Logto Endpoint, App ID, and App Secret
-   - Validates configuration during setup
-
-3. **Admin Panel Management**
-   - New Logto settings page in admin panel
-   - Test connection functionality
-   - View user statistics (Logto vs local users)
-   - Update configuration without editing files
-
-4. **Database Changes**
-   - Added `logto_sub` field to users table (Logto user ID)
-   - Added `auth_provider` field ('local' or 'logto')
-   - Automatic migration during installation
-
-### ❌ Removed Features
-
-1. **Traditional Authentication**
-   - Removed `/api/v1/passport/auth/register` endpoint
-   - Removed `/api/v1/passport/auth/login` endpoint
-   - Removed `/api/v1/passport/auth/forget` endpoint
-   - Removed email verification for registration
-   - Removed password reset functionality
-
-2. **Frontend Components**
-   - Traditional login form (to be removed by frontend team)
-   - Registration form (to be removed by frontend team)
-   - Password reset form (to be removed by frontend team)
+Xboard 已完全集成 Logto 认证系统。传统的邮箱/密码登录已被移除，所有用户认证现在都通过 Logto 进行。
 
 ---
 
-## 📁 Files Created
+## 📋 变更内容
+
+### ✅ 新增功能
+
+1. **Logto 认证系统**
+   - OAuth 2.0 + OpenID Connect (OIDC) 认证
+   - 自动用户同步
+   - 支持 SSO、MFA 和社交登录
+   - 可通过管理面板配置
+
+2. **安装流程**
+   - Logto 配置现在是安装向导的一部分
+   - 提示输入 Logto Endpoint、App ID 和 App Secret
+   - 在设置期间验证配置
+
+3. **管理面板管理**
+   - 管理面板中新增 Logto 设置页面
+   - 测试连接功能
+   - 查看用户统计（Logto vs 本地用户）
+   - 无需编辑文件即可更新配置
+
+4. **数据库变更**
+   - 向用户表添加 `logto_sub` 字段（Logto 用户 ID）
+   - 添加 `auth_provider` 字段（'local' 或 'logto'）
+   - 安装期间自动迁移
+
+### ❌ 移除的功能
+
+1. **传统认证**
+   - 移除 `/api/v1/passport/auth/register` 端点
+   - 移除 `/api/v1/passport/auth/login` 端点
+   - 移除 `/api/v1/passport/auth/forget` 端点
+   - 移除注册的邮箱验证
+   - 移除密码重置功能
+
+2. **前端组件**
+   - 传统登录表单（由前端团队移除）
+   - 注册表单（由前端团队移除）
+   - 密码重置表单（由前端团队移除）
+
+---
+
+## 📁 已创建的文件
 
 ### Backend Files
 
@@ -82,7 +82,7 @@ Xboard has been fully integrated with Logto authentication system. Traditional e
 
 ---
 
-## 🔌 API Endpoints
+## 🔌 API 端点
 
 ### User Authentication (V1)
 
@@ -106,7 +106,7 @@ Xboard has been fully integrated with Logto authentication system. Traditional e
 
 ---
 
-## 🗄️ Database Schema
+## 🗄️ 数据库架构
 
 ### New Fields in `v2_user` Table
 
@@ -135,7 +135,7 @@ Logto configuration is stored in the `v2_settings` table:
 
 ---
 
-## 🔧 Configuration
+## 🔧 配置
 
 ### Environment Variables
 
@@ -166,7 +166,7 @@ Settings include:
 
 ---
 
-## 🚀 Installation Process
+## 🚀 安装流程
 
 ### New Installation
 
@@ -191,7 +191,7 @@ After installation, configure in Logto Console:
 
 ---
 
-## 👥 User Management
+## 👥 用户管理
 
 ### User Types
 
@@ -233,7 +233,7 @@ After installation, configure in Logto Console:
 
 ---
 
-## 🔐 Security
+## 🔐 安全性
 
 ### Authentication Flow
 
@@ -266,7 +266,7 @@ User → Frontend → Logto Sign-in URL
 
 ---
 
-## 🎨 Frontend Integration
+## 🎨 前端集成
 
 ### Required Changes
 
@@ -297,7 +297,7 @@ See `docs/FRONTEND_LOGTO_INTEGRATION.md` for:
 
 ---
 
-## 📊 Admin Features
+## 📊 管理功能
 
 ### Logto Settings Page
 
@@ -341,7 +341,7 @@ POST /api/v2/{admin_path}/logto/test
 
 ---
 
-## 🧪 Testing
+## 🧪 测试
 
 ### Manual Testing
 
@@ -378,7 +378,7 @@ php artisan tinker
 
 ---
 
-## 🔄 Migration Guide
+## 🔄 迁移指南
 
 ### For Existing Installations
 
@@ -411,7 +411,7 @@ php artisan tinker
 
 ---
 
-## 🐛 Troubleshooting
+## 🐛 故障排查
 
 ### Common Issues
 
@@ -446,7 +446,7 @@ tail -f storage/logs/laravel.log
 
 ---
 
-## 📚 Documentation
+## 📚 文档
 
 - **Quick Setup:** `LOGTO_SETUP.md`
 - **Complete Guide:** `docs/LOGTO_INTEGRATION.md`
@@ -456,7 +456,7 @@ tail -f storage/logs/laravel.log
 
 ---
 
-## ✅ Checklist
+## ✅ 检查清单
 
 ### Backend Integration
 - [x] Install Logto SDK
@@ -504,7 +504,7 @@ tail -f storage/logs/laravel.log
 
 ---
 
-## 🎯 Next Steps
+## 🎯 后续步骤
 
 1. **Complete Frontend Integration**
    - Implement Logto composable
@@ -528,7 +528,7 @@ tail -f storage/logs/laravel.log
 
 ---
 
-## 📞 Support
+## 📞 支持
 
 For issues or questions:
 - Check documentation in `docs/` directory
