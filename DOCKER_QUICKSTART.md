@@ -1,0 +1,102 @@
+# Docker Quick Start Guide
+
+## 🚀 Quick Commands
+
+### Using the Build Script (Recommended)
+
+```bash
+# 1. Build image with tag
+./build-docker.sh v1.0.0
+
+# 2. Build and push to Docker Hub
+./build-docker.sh v1.0.0 --push
+
+# 3. Build from specific branch
+BRANCH_NAME=develop ./build-docker.sh v1.0.0 --push
+```
+
+### Manual Commands
+
+```bash
+# Build
+docker build \
+  --build-arg CACHEBUST=$(date +%s) \
+  --build-arg REPO_URL="https://github.com/ElinksTeam/ElinksBoard.git" \
+  --build-arg BRANCH_NAME="master" \
+  -t elinks/elinks:tagname \
+  .
+
+# Push
+docker login
+docker push elinks/elinks:tagname
+```
+
+## 📋 Prerequisites
+
+1. **Enable Docker in Dev Container** (if using Gitpod/VS Code Dev Containers)
+   - The `.devcontainer/devcontainer.json` has been updated with Docker-in-Docker
+   - **Rebuild your container** to apply changes:
+     - VS Code: `Ctrl+Shift+P` → "Dev Containers: Rebuild Container"
+     - Gitpod: Restart workspace
+
+2. **Login to Docker Hub**
+   ```bash
+   docker login
+   ```
+
+## 🔧 Common Tasks
+
+### Build for Multiple Architectures
+
+```bash
+docker buildx create --name multiarch --use
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  --build-arg CACHEBUST=$(date +%s) \
+  --build-arg REPO_URL="https://github.com/ElinksTeam/ElinksBoard.git" \
+  --build-arg BRANCH_NAME="master" \
+  -t elinks/elinks:tagname \
+  --push \
+  .
+```
+
+### Test Locally
+
+```bash
+docker run -d -p 7001:7001 --name test elinks/elinks:tagname
+docker logs -f test
+docker stop test && docker rm test
+```
+
+### Tag and Push Multiple Versions
+
+```bash
+# Build once
+docker build -t elinks/elinks:v1.0.0 .
+
+# Tag as latest
+docker tag elinks/elinks:v1.0.0 elinks/elinks:latest
+
+# Push both
+docker push elinks/elinks:v1.0.0
+docker push elinks/elinks:latest
+```
+
+## ⚠️ Important Notes
+
+1. **Container Rebuild Required**: After updating `.devcontainer/devcontainer.json`, you must rebuild your dev container for Docker to be available.
+
+2. **Build Arguments**: The Dockerfile requires these build args:
+   - `CACHEBUST`: Timestamp to force fresh git clone
+   - `REPO_URL`: Repository URL
+   - `BRANCH_NAME`: Branch to build from
+
+3. **Docker Hub Permissions**: Ensure you have push access to `elinks/elinks` or use your own namespace.
+
+## 📚 Full Documentation
+
+See [DOCKER_BUILD.md](DOCKER_BUILD.md) for complete documentation including:
+- Detailed build options
+- Troubleshooting guide
+- CI/CD integration examples
+- Docker Compose usage
