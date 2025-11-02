@@ -17,7 +17,7 @@ English | [简体中文](README_CN.md)
 
 ## 📖 Introduction
 
-Xboard is a modern panel system built on Laravel 11, focusing on providing a clean and efficient user experience. The latest version is fully integrated with Logto authentication system, providing enterprise-grade identity authentication solutions.
+ElinksBoard is a modern panel system built on Laravel 11, focusing on providing a clean and efficient user experience. The latest version is fully integrated with Logto authentication system, providing enterprise-grade identity authentication solutions.
 
 ## ✨ Features
 
