@@ -69,7 +69,6 @@ jobs:
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.version=${{ steps.get_version.outputs.version }}
-            org.opencontainers.image.created=${{ github.event.repository.updated_at }}
             org.opencontainers.image.licenses=MIT
 
       - name: Get version
