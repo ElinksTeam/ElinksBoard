@@ -1,4 +1,4 @@
-# Xboard
+# ElinksBoard
 
 <div align="center">
 
