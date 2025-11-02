@@ -29,7 +29,6 @@ return (new PhpCsFixer\Config())
         'phpdoc_var_without_name' => true,
         'method_argument_space' => [
             'on_multiline' => 'ensure_fully_multiline',
-            'keep_multiple_spaces_after_comma' => true,
         ]
     ])
     ->setFinder($finder);
