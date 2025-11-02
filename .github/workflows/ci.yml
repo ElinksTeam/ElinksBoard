@@ -74,7 +74,7 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: password
-          MYSQL_DATABASE: xboard_test
+          MYSQL_DATABASE: elinksboard_test
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -83,7 +83,7 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: xboard_test
+          POSTGRES_DB: elinksboard_test
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
@@ -132,14 +132,14 @@ jobs:
             echo "DB_CONNECTION=mysql" >> .env
             echo "DB_HOST=127.0.0.1" >> .env
             echo "DB_PORT=3306" >> .env
-            echo "DB_DATABASE=xboard_test" >> .env
+            echo "DB_DATABASE=elinksboard_test" >> .env
             echo "DB_USERNAME=root" >> .env
             echo "DB_PASSWORD=password" >> .env
           elif [ "${{ matrix.db }}" == "pgsql" ]; then
             echo "DB_CONNECTION=pgsql" >> .env
             echo "DB_HOST=127.0.0.1" >> .env
             echo "DB_PORT=5432" >> .env
-            echo "DB_DATABASE=xboard_test" >> .env
+            echo "DB_DATABASE=elinksboard_test" >> .env
             echo "DB_USERNAME=postgres" >> .env
             echo "DB_PASSWORD=password" >> .env
           else

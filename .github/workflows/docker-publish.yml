@@ -8,6 +8,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  COSIGN_EXPERIMENTAL: "true"
 
 jobs:
   build:
@@ -63,8 +64,13 @@ jobs:
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
             type=raw,value=${{ steps.get_version.outputs.version }}
           labels: |
+            org.opencontainers.image.title=ElinksBoard
+            org.opencontainers.image.description=Modern subscription management panel
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ steps.get_version.outputs.version }}
+            org.opencontainers.image.created=${{ github.event.repository.updated_at }}
+            org.opencontainers.image.licenses=MIT
 
       - name: Get version
         id: get_version
@@ -103,7 +109,11 @@ jobs:
         with:
           cosign-release: 'v2.2.2'
 
-      - name: Sign image
+      - name: Sign container image with keyless signing
         if: steps.build-and-push.outputs.digest != ''
+        env:
+          COSIGN_EXPERIMENTAL: "true"
         run: |
+          echo "Signing image with digest: ${{ steps.build-and-push.outputs.digest }}"
           echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign --yes "{}@${{ steps.build-and-push.outputs.digest }}"
+          echo "✅ Image signed successfully with keyless signing"
