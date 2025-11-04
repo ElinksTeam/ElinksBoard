@@ -68,18 +68,18 @@ class Clash extends AbstractProtocol
         }
 
         $config['proxies'] = array_merge($config['proxies'] ? $config['proxies'] : [], $proxy);
-        foreach ($config['proxy-groups'] as $k => $v) {
-            if (!is_array($config['proxy-groups'][$k]['proxies']))
-                $config['proxy-groups'][$k]['proxies'] = [];
+        foreach ($config['proxy-groups'] as $groupIndex => $proxyGroup) {
+            if (!is_array($config['proxy-groups'][$groupIndex]['proxies']))
+                $config['proxy-groups'][$groupIndex]['proxies'] = [];
             $isFilter = false;
-            foreach ($config['proxy-groups'][$k]['proxies'] as $src) {
-                foreach ($proxies as $dst) {
-                    if (!$this->isRegex($src))
+            foreach ($config['proxy-groups'][$groupIndex]['proxies'] as $proxyPattern) {
+                foreach ($proxies as $proxyName) {
+                    if (!$this->isRegex($proxyPattern))
                         continue;
                     $isFilter = true;
-                    $config['proxy-groups'][$k]['proxies'] = array_values(array_diff($config['proxy-groups'][$k]['proxies'], [$src]));
-                    if ($this->isMatch($src, $dst)) {
-                        array_push($config['proxy-groups'][$k]['proxies'], $dst);
+                    $config['proxy-groups'][$groupIndex]['proxies'] = array_values(array_diff($config['proxy-groups'][$groupIndex]['proxies'], [$proxyPattern]));
+                    if ($this->isMatch($proxyPattern, $proxyName)) {
+                        array_push($config['proxy-groups'][$groupIndex]['proxies'], $proxyName);
                     }
                 }
                 if ($isFilter)
@@ -87,7 +87,7 @@ class Clash extends AbstractProtocol
             }
             if ($isFilter)
                 continue;
-            $config['proxy-groups'][$k]['proxies'] = array_merge($config['proxy-groups'][$k]['proxies'], $proxies);
+            $config['proxy-groups'][$groupIndex]['proxies'] = array_merge($config['proxy-groups'][$groupIndex]['proxies'], $proxies);
         }
 
         $config['proxy-groups'] = array_filter($config['proxy-groups'], function ($group) {

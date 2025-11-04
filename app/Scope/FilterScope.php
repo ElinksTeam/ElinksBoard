@@ -18,29 +18,29 @@ trait FilterScope
         ]);
         $filters = $request->input('filter');
         if ($filters) {
-            foreach ($filters as $k => $filter) {
-                if ($filter['condition'] === 'in') {
-                    $builder->whereIn($filter['key'], $filter['value']);
+            foreach ($filters as $filterConfig) {
+                if ($filterConfig['condition'] === 'in') {
+                    $builder->whereIn($filterConfig['key'], $filterConfig['value']);
                     continue;
                 }
-                if ($filter['condition'] === 'is') {
-                    $builder->where($filter['key'], $filter['value']);
+                if ($filterConfig['condition'] === 'is') {
+                    $builder->where($filterConfig['key'], $filterConfig['value']);
                     continue;
                 }
-                if ($filter['condition'] === 'not') {
-                    $builder->where($filter['key'], '!=', $filter['value']);
+                if ($filterConfig['condition'] === 'not') {
+                    $builder->where($filterConfig['key'], '!=', $filterConfig['value']);
                     continue;
                 }
-                if ($filter['condition'] === 'gt') {
-                    $builder->where($filter['key'], '>', $filter['value']);
+                if ($filterConfig['condition'] === 'gt') {
+                    $builder->where($filterConfig['key'], '>', $filterConfig['value']);
                     continue;
                 }
-                if ($filter['condition'] === 'lt') {
-                    $builder->where($filter['key'], '<', $filter['value']);
+                if ($filterConfig['condition'] === 'lt') {
+                    $builder->where($filterConfig['key'], '<', $filterConfig['value']);
                     continue;
                 }
-                if ($filter['condition'] === 'like') {
-                    $builder->where($filter['key'], 'like', "%{$filter['value']}%");
+                if ($filterConfig['condition'] === 'like') {
+                    $builder->where($filterConfig['key'], 'like', "%{$filterConfig['value']}%");
                     continue;
                 }
             }

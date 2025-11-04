@@ -53,8 +53,8 @@ class AppController extends Controller
         }
 
         $config['proxies'] = array_merge($config['proxies'] ? $config['proxies'] : [], $proxy);
-        foreach ($config['proxy-groups'] as $k => $v) {
-            $config['proxy-groups'][$k]['proxies'] = array_merge($config['proxy-groups'][$k]['proxies'], $proxies);
+        foreach ($config['proxy-groups'] as $groupIndex => $proxyGroup) {
+            $config['proxy-groups'][$groupIndex]['proxies'] = array_merge($config['proxy-groups'][$groupIndex]['proxies'], $proxies);
         }
         return(Yaml::dump($config));
     }

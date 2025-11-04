@@ -328,10 +328,10 @@ class StatisticalService
             ->get();
 
         $users = User::whereIn('id', $stats->pluck('invite_user_id')->toArray())->get()->keyBy('id');
-        foreach ($stats as $k => $v) {
-            if (!isset($users[$v['invite_user_id']]))
+        foreach ($stats as $index => $stat) {
+            if (!isset($users[$stat['invite_user_id']]))
                 continue;
-            $stats[$k]['email'] = $users[$v['invite_user_id']]['email'];
+            $stats[$index]['email'] = $users[$stat['invite_user_id']]['email'];
         }
         return $stats;
     }
@@ -351,10 +351,10 @@ class StatisticalService
             ->limit($limit)
             ->get();
         $users = User::whereIn('id', $stats->pluck('user_id')->toArray())->get()->keyBy('id');
-        foreach ($stats as $k => $v) {
-            if (!isset($users[$v['user_id']]))
+        foreach ($stats as $index => $stat) {
+            if (!isset($users[$stat['user_id']]))
                 continue;
-            $stats[$k]['email'] = $users[$v['user_id']]['email'];
+            $stats[$index]['email'] = $users[$stat['user_id']]['email'];
         }
         return $stats;
     }

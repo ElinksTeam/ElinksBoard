@@ -80,10 +80,10 @@ class KnowledgeController extends Controller
         ]);
         try {
             DB::beginTransaction();
-            foreach ($request->input('ids') as $k => $v) {
-                $knowledge = Knowledge::find($v);
+            foreach ($request->input('ids') as $index => $knowledgeId) {
+                $knowledge = Knowledge::find($knowledgeId);
                 $knowledge->timestamps = false;
-                $knowledge->update(['sort' => $k + 1]);
+                $knowledge->update(['sort' => $index + 1]);
             }
             DB::commit();
         } catch (\Exception $e) {

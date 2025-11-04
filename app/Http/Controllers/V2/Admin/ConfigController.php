@@ -224,12 +224,12 @@ class ConfigController extends Controller
     {
         $data = $request->validated();
 
-        foreach ($data as $k => $v) {
-            if ($k == 'frontend_theme') {
+        foreach ($data as $configKey => $configValue) {
+            if ($configKey == 'frontend_theme') {
                 $themeService = app(ThemeService::class);
-                $themeService->switch($v);
+                $themeService->switch($configValue);
             }
-            admin_setting([$k => $v]);
+            admin_setting([$configKey => $configValue]);
         }
 
         return $this->success(true);
