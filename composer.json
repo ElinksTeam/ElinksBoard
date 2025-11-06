@@ -1,9 +1,9 @@
 {
-    "name": "xboard/xboard",
+    "name": "elinksboard/elinksboard",
     "type": "project",
-    "description": "xboard is a proxy protocol manage.",
+    "description": "ElinksBoard is a modern proxy protocol management panel.",
     "keywords": [
-        "xboard",
+        "elinksboard",
         "v2ray",
         "shadowsocks",
         "trojan",

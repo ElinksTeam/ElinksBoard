@@ -45,7 +45,7 @@ jobs:
         id: release_notes
         run: |
           cat > release_notes.md << 'EOF'
-          ## 🎉 Xboard ${{ steps.version.outputs.version }}
+          ## 🎉 ElinksBoard ${{ steps.version.outputs.version }}
 
           ### ✨ 新功能
 
@@ -59,25 +59,22 @@ jobs:
 
           #### Docker Compose（推荐）
           \`\`\`bash
-          git clone -b compose --depth 1 https://github.com/cedar2025/Xboard
-          cd Xboard
-          docker compose run -it --rm \
-              -e ENABLE_SQLITE=true \
-              -e ENABLE_REDIS=true \
-              web php artisan xboard:install
+          git clone --depth 1 https://github.com/ElinksTeam/ElinksBoard
+          cd ElinksBoard
+          cp compose.sample.yaml docker-compose.yml
           docker compose up -d
           \`\`\`
 
           #### Docker 镜像
           \`\`\`bash
-          docker pull ghcr.io/cedar2025/xboard:${{ steps.version.outputs.version }}
+          docker pull ghcr.io/elinksteam/elinksboard:${{ steps.version.outputs.version }}
           \`\`\`
 
           ### 📚 文档
 
-          - [安装指南](https://github.com/cedar2025/Xboard/blob/master/INSTALLATION_GUIDE.md)
-          - [Logto 设置](https://github.com/cedar2025/Xboard/blob/master/LOGTO_SETUP.md)
-          - [完整文档](https://github.com/cedar2025/Xboard/blob/master/README_CN.md)
+          - [安装指南](https://github.com/ElinksTeam/ElinksBoard/blob/master/INSTALLATION_GUIDE.md)
+          - [Logto 设置](https://github.com/ElinksTeam/ElinksBoard/blob/master/LOGTO_SETUP.md)
+          - [完整文档](https://github.com/ElinksTeam/ElinksBoard/blob/master/README_CN.md)
 
           ### ⚠️ 重要提示
 
@@ -114,7 +111,7 @@ jobs:
 
           ---
 
-          **完整变更**: https://github.com/cedar2025/Xboard/compare/${{ steps.version.outputs.version }}...master
+          **完整变更**: https://github.com/ElinksTeam/ElinksBoard/compare/${{ steps.version.outputs.version }}...master
           EOF
 
       - name: Create GitHub Release
@@ -150,7 +147,7 @@ jobs:
       - name: Create release archive
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
-          tar -czf xboard-${VERSION}.tar.gz \
+          tar -czf elinksboard-${VERSION}.tar.gz \
             --exclude='.git' \
             --exclude='.github' \
             --exclude='node_modules' \
@@ -161,7 +158,7 @@ jobs:
       - name: Upload release asset
         uses: softprops/action-gh-release@v1
         with:
-          files: xboard-*.tar.gz
+          files: elinksboard-*.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -181,7 +178,7 @@ jobs:
           if [ "${{ needs.create-release.result }}" == "success" ] && \
              [ "${{ needs.build-release-assets.result }}" == "success" ]; then
             echo "✅ Release ${{ steps.version.outputs.version }} created successfully"
-            echo "📦 Download: https://github.com/cedar2025/Xboard/releases/tag/${{ steps.version.outputs.version }}"
+            echo "📦 Download: https://github.com/ElinksTeam/ElinksBoard/releases/tag/${{ steps.version.outputs.version }}"
           else
             echo "❌ Release creation failed"
             exit 1
