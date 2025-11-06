@@ -88,7 +88,7 @@ docker buildx build \
   --build-arg CACHEBUST=$(date +%s) \
   --build-arg REPO_URL="https://github.com/ElinksTeam/ElinksBoard.git" \
   --build-arg BRANCH_NAME="master" \
-  -t elinks/elinks:tagname \
+  -t elinksboard/elinksboard:tagname \
   --push \
   .
 ```
@@ -96,7 +96,7 @@ docker buildx build \
 ### Test Locally
 
 ```bash
-docker run -d -p 7001:7001 --name test elinks/elinks:tagname
+docker run -d -p 7001:7001 --name test elinksboard/elinksboard:tagname
 docker logs -f test
 docker stop test && docker rm test
 ```
@@ -105,14 +105,14 @@ docker stop test && docker rm test
 
 ```bash
 # Build once
-docker build -t elinks/elinks:v1.0.0 .
+docker build -t elinksboard/elinksboard:v1.0.0 .
 
 # Tag as latest
-docker tag elinks/elinks:v1.0.0 elinks/elinks:latest
+docker tag elinksboard/elinksboard:v1.0.0 elinksboard/elinksboard:latest
 
 # Push both
-docker push elinks/elinks:v1.0.0
-docker push elinks/elinks:latest
+docker push elinksboard/elinksboard:v1.0.0
+docker push elinksboard/elinksboard:latest
 ```
 
 ## ⚠️ Important Notes
@@ -124,7 +124,7 @@ docker push elinks/elinks:latest
    - `REPO_URL`: Repository URL
    - `BRANCH_NAME`: Branch to build from
 
-3. **Docker Hub Permissions**: Ensure you have push access to `elinks/elinks` or use your own namespace.
+3. **Docker Hub Permissions**: Ensure you have push access to `elinksboard/elinksboard` or use your own namespace.
 
 ## 📚 Full Documentation
 

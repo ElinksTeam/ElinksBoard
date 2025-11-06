@@ -161,7 +161,7 @@ docker buildx build \
   --build-arg CACHEBUST=$(date +%s) \
   --build-arg REPO_URL="https://github.com/ElinksTeam/ElinksBoard.git" \
   --build-arg BRANCH_NAME="master" \
-  -t elinks/elinks:tagname \
+  -t elinksboard/elinksboard:tagname \
   --push \
   .
 ```
@@ -243,7 +243,7 @@ If you're in a Gitpod/dev container and Docker is not available:
      --build-arg CACHEBUST=$(date +%s) \
      --build-arg REPO_URL="https://github.com/ElinksTeam/ElinksBoard.git" \
      --build-arg BRANCH_NAME="master" \
-     -t elinks/elinks:test .
+     -t elinksboard/elinksboard:test .
    ```
 
 3. **Check .dockerignore**:
