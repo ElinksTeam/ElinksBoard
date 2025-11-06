@@ -129,14 +129,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ```bash
 # 克隆仓库
-git clone -b compose --depth 1 https://github.com/cedar2025/Xboard
+git clone -b compose --depth 1 https://github.com/ElinksTeam/ElinksBoard
 cd Xboard
 
 # 运行安装向导
 docker compose run -it --rm \
     -e ENABLE_SQLITE=true \
     -e ENABLE_REDIS=true \
-    web php artisan xboard:install
+    web # Installation wizard removed - configure via .env and admin panel
 
 # 启动服务
 docker compose up -d
@@ -145,7 +145,7 @@ docker compose up -d
 #### Docker 镜像
 
 ```bash
-docker pull ghcr.io/cedar2025/xboard:2.0.0
+docker pull ghcr.io/elinksteam/elinksboard:2.0.0
 ```
 
 ### 🔗 相关链接
@@ -179,4 +179,4 @@ docker pull ghcr.io/cedar2025/xboard:2.0.0
 
 ---
 
-**完整变更历史**: https://github.com/cedar2025/Xboard/commits/master
+**完整变更历史**: https://github.com/ElinksTeam/ElinksBoard/commits/master

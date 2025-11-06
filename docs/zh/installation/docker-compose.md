@@ -95,11 +95,11 @@ docker ps
 
 ---
 
-## 🚀 步骤 2：下载 Xboard
+## 🚀 步骤 2：下載 ElinksBoard
 
 ```bash
 # 克隆仓库（compose 分支）
-git clone -b compose --depth 1 https://github.com/cedar2025/Xboard.git
+git clone -b compose --depth 1 https://github.com/ElinksTeam/ElinksBoard.git
 
 # 进入目录
 cd Xboard
@@ -145,7 +145,7 @@ nano docker-compose.yml
 ```yaml
 services:
   web:
-    image: ghcr.io/cedar2025/xboard:new
+    image: ghcr.io/elinksteam/elinksboard:latest
     ports:
       - "7001:7001"  # 修改端口（可选）
     volumes:
@@ -159,7 +159,7 @@ services:
     restart: always
 
   horizon:
-    image: ghcr.io/cedar2025/xboard:new
+    image: ghcr.io/elinksteam/elinksboard:latest
     volumes:
       - ./.docker/.data/redis/:/data/
       - ./:/www/
@@ -188,7 +188,7 @@ services:
 docker compose run -it --rm \
     -e ENABLE_SQLITE=true \
     -e ENABLE_REDIS=true \
-    web php artisan xboard:install
+    web # Installation wizard removed - configure via .env and admin panel
 ```
 
 ### 使用 MySQL
@@ -196,7 +196,7 @@ docker compose run -it --rm \
 ```bash
 docker compose run -it --rm \
     -e ENABLE_REDIS=true \
-    web php artisan xboard:install
+    web # Installation wizard removed - configure via .env and admin panel
 ```
 
 ### 安装向导流程
@@ -550,7 +550,7 @@ docker compose logs web
 cat .env
 
 # 重新运行安装
-docker compose run --rm web php artisan xboard:install
+docker compose run --rm web # Installation wizard removed - configure via .env and admin panel
 
 # 重启服务
 docker compose restart
@@ -816,7 +816,7 @@ docker compose exec web php artisan cache:optimize
 
 - **文档**: [完整文档](../../INSTALLATION_GUIDE.md)
 - **Telegram**: [XboardOfficial](https://t.me/XboardOfficial)
-- **GitHub**: [提交 Issue](https://github.com/cedar2025/Xboard/issues)
+- **GitHub**: [提交 Issue](https://github.com/ElinksTeam/ElinksBoard/issues)
 
 ---
 

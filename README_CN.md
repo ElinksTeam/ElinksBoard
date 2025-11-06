@@ -9,7 +9,7 @@
 
 **现代化的面板系统 | 基于 Laravel 11 | 集成 Logto 认证**
 
-[English](README.md) | 简体中文
+[English](README.md) | 简体中文 | [繁體中文](README_TW.md)
 
 </div>
 
@@ -58,24 +58,15 @@ ElinksBoard 是一个基于 Laravel 11 构建的现代化面板系统，专注�
 
 ```bash
 # 1. 克隆仓库
-git clone -b compose --depth 1 https://github.com/cedar2025/Xboard
-cd Xboard
+git clone --depth 1 https://github.com/ElinksTeam/ElinksBoard
+cd ElinksBoard
 
-# 2. 运行安装向导
-docker compose run -it --rm \
-    -e ENABLE_SQLITE=true \
-    -e ENABLE_REDIS=true \
-    web php artisan xboard:install
+# 2. 复制 Docker Compose 配置
+cp compose.sample.yaml docker-compose.yml
 
 # 3. 启动服务
 docker compose up -d
 ```
-
-**安装向导将引导您完成：**
-1. 数据库配置（SQLite/MySQL/PostgreSQL）
-2. Redis 配置
-3. **Logto 认证配置**（必需）
-4. 系统初始化
 
 **访问您的站点：** `http://服务器IP:7001`
 
@@ -106,7 +97,7 @@ docker compose up -d
 
 ```bash
 # 即将推出
-curl -sSL https://raw.githubusercontent.com/cedar2025/Xboard/master/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/ElinksTeam/ElinksBoard/master/install.sh | bash
 ```
 
 ---
@@ -127,11 +118,7 @@ curl -sSL https://raw.githubusercontent.com/cedar2025/Xboard/master/install.sh |
    http://your-domain.com/api/v1/passport/auth/logto/callback
    ```
 
-4. **运行安装向导**
-   - 安装过程中输入 Logto 凭据
-   - 系统自动配置并测试连接
-
-5. **完成首次登录** ⚠️ **关键步骤**
+4. **完成首次登录** ⚠️ **关键步骤**
    - 安装后立即访问您的站点
    - 点击"使用 Logto 登录"
    - 首次登录的用户自动成为管理员
@@ -154,7 +141,7 @@ curl -sSL https://raw.githubusercontent.com/cedar2025/Xboard/master/install.sh |
 
 ### 🔄 迁移指南
 
-从其他系统迁移到 Xboard：
+从其他系统迁移到 ElinksBoard：
 
 - [从 v2board dev 迁移](docs/en/migration/v2board-dev.md)
 - [从 v2board 1.7.4 迁移](docs/en/migration/v2board-1.7.4.md)
@@ -167,9 +154,14 @@ curl -sSL https://raw.githubusercontent.com/cedar2025/Xboard/master/install.sh |
 - [Redis 快速参考](docs/REDIS_QUICK_REFERENCE.md) - 常用命令和操作
 - [实施总结](REDIS_IMPLEMENTATION_SUMMARY.md) - Redis 功能实施详情
 
+### 🐳 Docker 文档
+
+- [Docker 构建指南](DOCKER_BUILD.md) - 完整的 Docker 镜像构建和推送文档
+- [Docker 快速入门](DOCKER_QUICKSTART.md) - Docker 操作快速参考
+
 ### 🛠️ 开发文档
 
-- [插件开发指南](docs/en/development/plugin-development-guide.md) - 开发 Xboard 插件
+- [插件开发指南](docs/en/development/plugin-development-guide.md) - 开发 ElinksBoard 插件
 - [性能优化](docs/en/development/performance.md) - 性能优化建议
 - [设备限制](docs/en/development/device-limit.md) - 设备限制功能
 
@@ -330,7 +322,7 @@ docker compose restart
 1. **备份数据库**
    ```bash
    # MySQL
-   mysqldump -u root -p xboard > backup.sql
+   mysqldump -u root -p elinksboard > backup.sql
    
    # SQLite
    cp database/database.sqlite database/database.sqlite.backup
@@ -406,8 +398,8 @@ docker compose restart
 ### 社区支持
 
 - **Telegram 频道**: [XboardOfficial](https://t.me/XboardOfficial)
-- **GitHub Issues**: [提交问题](https://github.com/cedar2025/Xboard/issues)
-- **GitHub Discussions**: [参与讨论](https://github.com/cedar2025/Xboard/discussions)
+- **GitHub Issues**: [提交问题](https://github.com/ElinksTeam/ElinksBoard/issues)
+- **GitHub Discussions**: [参与讨论](https://github.com/ElinksTeam/ElinksBoard/discussions)
 
 ### 日志调试
 
@@ -428,7 +420,7 @@ LOG_LEVEL=debug
 
 ## 📈 Star 历史
 
-[![Stargazers over time](https://starchart.cc/cedar2025/Xboard.svg)](https://starchart.cc/cedar2025/Xboard)
+[![Stargazers over time](https://starchart.cc/ElinksTeam/ElinksBoard.svg)](https://starchart.cc/ElinksTeam/ElinksBoard)
 
 ---
 
@@ -454,6 +446,6 @@ LOG_LEVEL=debug
 
 **如果这个项目对您有帮助，请给我们一个 ⭐️**
 
-Made with ❤️ by Xboard Team
+Made with ❤️ by ElinksBoard Team
 
 </div>

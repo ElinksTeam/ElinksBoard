@@ -102,9 +102,9 @@ sudo mysql -u root -p
 在 MySQL 中执行：
 
 ```sql
-CREATE DATABASE xboard CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'xboard'@'localhost' IDENTIFIED BY 'your_strong_password';
-GRANT ALL PRIVILEGES ON xboard.* TO 'xboard'@'localhost';
+CREATE DATABASE elinksboard CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'elinksboard'@'localhost' IDENTIFIED BY 'your_strong_password';
+GRANT ALL PRIVILEGES ON elinksboard.* TO 'xboard'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
 ```
@@ -146,7 +146,7 @@ sudo systemctl enable redis
 
 ---
 
-## 📥 步骤 4：下载 Xboard
+## 📥 步骤 4：下載 ElinksBoard
 
 ```bash
 # 创建目录
@@ -154,14 +154,14 @@ sudo mkdir -p /var/www
 cd /var/www
 
 # 克隆仓库
-sudo git clone https://github.com/cedar2025/Xboard.git xboard
-cd xboard
+sudo git clone https://github.com/ElinksTeam/ElinksBoard.git xboard
+cd ElinksBoard
 
 # 设置权限
-sudo chown -R www-data:www-data /var/www/xboard
-sudo chmod -R 755 /var/www/xboard
-sudo chmod -R 775 /var/www/xboard/storage
-sudo chmod -R 775 /var/www/xboard/bootstrap/cache
+sudo chown -R www-data:www-data /var/www/elinksboard
+sudo chmod -R 755 /var/www/elinksboard
+sudo chmod -R 775 /var/www/elinksboard/storage
+sudo chmod -R 775 /var/www/elinksboard/bootstrap/cache
 ```
 
 ---
@@ -169,7 +169,7 @@ sudo chmod -R 775 /var/www/xboard/bootstrap/cache
 ## ⚙️ 步骤 5：安装依赖
 
 ```bash
-cd /var/www/xboard
+cd /var/www/elinksboard
 
 # 安装 PHP 依赖
 sudo -u www-data composer install --no-dev --optimize-autoloader
@@ -236,7 +236,7 @@ LOGTO_AUTO_UPDATE_USER=true
 ## 🗄️ 步骤 7：运行数据库迁移
 
 ```bash
-cd /var/www/xboard
+cd /var/www/elinksboard
 
 # 运行迁移
 sudo -u www-data php artisan migrate --force
@@ -263,7 +263,7 @@ sudo nano /etc/nginx/sites-available/xboard
 server {
     listen 80;
     server_name your-domain.com;
-    root /var/www/xboard/public;
+    root /var/www/elinksboard/public;
 
     add_header X-Frame-Options "SAMEORIGIN";
     add_header X-Content-Type-Options "nosniff";
@@ -341,8 +341,8 @@ After=network.target
 Type=simple
 User=www-data
 Group=www-data
-WorkingDirectory=/var/www/xboard
-ExecStart=/usr/bin/php /var/www/xboard/artisan octane:start --host=127.0.0.1 --port=8000
+WorkingDirectory=/var/www/elinksboard
+ExecStart=/usr/bin/php /var/www/elinksboard/artisan octane:start --host=127.0.0.1 --port=8000
 Restart=always
 RestartSec=3
 
@@ -399,8 +399,8 @@ After=network.target
 Type=simple
 User=www-data
 Group=www-data
-WorkingDirectory=/var/www/xboard
-ExecStart=/usr/bin/php /var/www/xboard/artisan horizon
+WorkingDirectory=/var/www/elinksboard
+ExecStart=/usr/bin/php /var/www/elinksboard/artisan horizon
 Restart=always
 RestartSec=3
 
@@ -478,7 +478,7 @@ sudo systemctl restart mysql
 ### 应用管理
 
 ```bash
-cd /var/www/xboard
+cd /var/www/elinksboard
 
 # 清理缓存
 sudo -u www-data php artisan cache:clear
@@ -507,7 +507,7 @@ sudo -u www-data php artisan cache:optimize
 
 ### 日志位置
 
-- **Laravel**: `/var/www/xboard/storage/logs/laravel.log`
+- **Laravel**: `/var/www/elinksboard/storage/logs/laravel.log`
 - **Nginx**: `/var/log/nginx/access.log`, `/var/log/nginx/error.log`
 - **PHP-FPM**: `/var/log/php8.2-fpm.log`
 - **Redis**: `/var/log/redis/redis-server.log`
@@ -520,10 +520,10 @@ sudo -u www-data php artisan cache:optimize
 mysqldump -u xboard -p xboard > backup_$(date +%Y%m%d).sql
 
 # 备份 Redis
-/var/www/xboard/scripts/backup-redis.sh
+/var/www/elinksboard/scripts/backup-redis.sh
 
 # 清理日志
-sudo find /var/www/xboard/storage/logs -name "*.log" -mtime +7 -delete
+sudo find /var/www/elinksboard/storage/logs -name "*.log" -mtime +7 -delete
 
 # 更新系统
 sudo apt update && sudo apt upgrade -y
@@ -557,16 +557,16 @@ sudo journalctl -u xboard-horizon -f
 sudo tail -f /var/log/nginx/error.log
 
 # Laravel 日志
-sudo tail -f /var/www/xboard/storage/logs/laravel.log
+sudo tail -f /var/www/elinksboard/storage/logs/laravel.log
 ```
 
 ### 常见问题
 
 1. **权限问题**
    ```bash
-   sudo chown -R www-data:www-data /var/www/xboard
-   sudo chmod -R 775 /var/www/xboard/storage
-   sudo chmod -R 775 /var/www/xboard/bootstrap/cache
+   sudo chown -R www-data:www-data /var/www/elinksboard
+   sudo chmod -R 775 /var/www/elinksboard/storage
+   sudo chmod -R 775 /var/www/elinksboard/bootstrap/cache
    ```
 
 2. **Octane 无法启动**

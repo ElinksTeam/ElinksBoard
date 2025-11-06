@@ -170,7 +170,7 @@ Settings include:
 
 ### New Installation
 
-1. Run `php artisan xboard:install`
+1. Run `# Installation wizard removed - configure via .env and admin panel`
 2. Follow database configuration prompts
 3. Configure Redis
 4. **Configure Logto** (new step):
@@ -347,7 +347,7 @@ POST /api/v2/{admin_path}/logto/test
 
 1. **Installation Test**
    ```bash
-   php artisan xboard:install
+   # Installation wizard removed - configure via .env and admin panel
    # Follow prompts and configure Logto
    ```
 

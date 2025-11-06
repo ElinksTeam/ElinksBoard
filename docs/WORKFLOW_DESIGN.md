@@ -475,7 +475,7 @@ A: 查看日志，修复问题，重新运行或提交新的修复
 
 ## 📞 获取帮助
 
-- **GitHub Issues**: [提交问题](https://github.com/cedar2025/Xboard/issues)
+- **GitHub Issues**: [提交问题](https://github.com/ElinksTeam/ElinksBoard/issues)
 - **Telegram**: [XboardOfficial](https://t.me/XboardOfficial)
 - **文档**: [完整文档](../README_CN.md)
 

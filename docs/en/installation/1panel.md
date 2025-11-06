@@ -62,7 +62,7 @@ apt update && apt install -y git
 yum update && yum install -y git
 
 # Clone repository
-git clone -b compose --depth 1 https://github.com/cedar2025/Xboard ./
+git clone -b compose --depth 1 https://github.com/ElinksTeam/ElinksBoard ./
 
 # Configure Docker Compose
 ```
@@ -71,7 +71,7 @@ git clone -b compose --depth 1 https://github.com/cedar2025/Xboard ./
 ```yaml
 services:
   web:
-    image: ghcr.io/cedar2025/xboard:new
+    image: ghcr.io/elinksteam/elinksboard:latest
     volumes:
       - ./.docker/.data/redis/:/data/
       - ./.env:/www/.env
@@ -91,7 +91,7 @@ services:
       - 1panel-network
 
   horizon:
-    image: ghcr.io/cedar2025/xboard:new
+    image: ghcr.io/elinksteam/elinksboard:latest
     volumes:
       - ./.docker/.data/redis/:/data/
       - ./.env:/www/.env
@@ -122,7 +122,7 @@ networks:
 5. Initialize Installation:
 ```bash
 # Install dependencies and initialize
-docker compose run -it --rm web php artisan xboard:install
+docker compose run -it --rm web # Installation wizard removed - configure via .env and admin panel
 ```
 
 ⚠️ Important Configuration Notes:

@@ -17,7 +17,7 @@ systemctl start docker
 
 1. Get project files:
 ```bash
-git clone -b compose --depth 1 https://github.com/cedar2025/Xboard
+git clone -b compose --depth 1 https://github.com/ElinksTeam/ElinksBoard
 cd Xboard
 ```
 
@@ -29,11 +29,11 @@ docker compose run -it --rm \
     -e ENABLE_SQLITE=true \
     -e ENABLE_REDIS=true \
     -e ADMIN_ACCOUNT=admin@demo.com \
-    web php artisan xboard:install
+    web # Installation wizard removed - configure via .env and admin panel
 ```
 - Custom configuration installation (Advanced users)
 ```bash
-docker compose run -it --rm web php artisan xboard:install
+docker compose run -it --rm web # Installation wizard removed - configure via .env and admin panel
 ```
 > Please save the admin dashboard URL, username, and password shown after installation
 

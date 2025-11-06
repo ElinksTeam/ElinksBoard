@@ -73,7 +73,7 @@ gh run view <run-id> --log
 
 **Badge**:
 ```markdown
-![CI](https://github.com/cedar2025/Xboard/workflows/CI/badge.svg)
+![CI](https://github.com/ElinksTeam/ElinksBoard/workflows/CI/badge.svg)
 ```
 
 ---
@@ -102,11 +102,11 @@ git push origin master
 gh workflow run docker-publish.yml
 
 # 拉取镜像
-docker pull ghcr.io/cedar2025/xboard:latest
-docker pull ghcr.io/cedar2025/xboard:new
+docker pull ghcr.io/elinksteam/elinksboard:latest
+docker pull ghcr.io/elinksteam/elinksboard:latest
 
 # 验证签名
-cosign verify ghcr.io/cedar2025/xboard:latest
+cosign verify ghcr.io/elinksteam/elinksboard:latest
 ```
 
 **镜像标签**:
@@ -514,7 +514,7 @@ concurrency:
 
 ## 📞 获取帮助
 
-- **GitHub Issues**: [提交问题](https://github.com/cedar2025/Xboard/issues)
+- **GitHub Issues**: [提交问题](https://github.com/ElinksTeam/ElinksBoard/issues)
 - **Telegram**: [XboardOfficial](https://t.me/XboardOfficial)
 - **文档**: [完整文档](../README_CN.md)
 

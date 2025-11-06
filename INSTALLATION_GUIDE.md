@@ -30,7 +30,7 @@ composer install
 ### 步骤 3：运行安装命令
 
 ```bash
-php artisan xboard:install
+# Installation wizard removed - configure via .env and admin panel
 ```
 
 ### 步骤 4：按照安装向导操作

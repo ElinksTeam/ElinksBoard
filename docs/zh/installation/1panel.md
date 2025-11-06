@@ -66,13 +66,13 @@ curl -sSL https://resource.fit2cloud.com/1panel/package/quick_start.sh -o quick_
 
 ```bash
 cd /opt
-git clone -b compose --depth 1 https://github.com/cedar2025/Xboard.git xboard
-cd xboard
+git clone -b compose --depth 1 https://github.com/ElinksTeam/ElinksBoard.git xboard
+cd ElinksBoard
 ```
 
 **方式二：手动上传**
 
-1. 下载 Xboard 到本地
+1. 下載 ElinksBoard 到本地
 2. 使用 1Panel 文件管理上传
 3. 解压到 `/opt/xboard`
 
@@ -111,7 +111,7 @@ cd /opt/xboard
 docker compose run -it --rm \
     -e ENABLE_SQLITE=true \
     -e ENABLE_REDIS=true \
-    web php artisan xboard:install
+    web # Installation wizard removed - configure via .env and admin panel
 ```
 
 按照向导完成配置：

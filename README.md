@@ -9,7 +9,7 @@
 
 **Modern Panel System | Built on Laravel 11 | Integrated with Logto Authentication**
 
-English | [简体中文](README_CN.md)
+English | [简体中文](README_CN.md) | [繁體中文](README_TW.md)
 
 </div>
 
@@ -33,21 +33,15 @@ ElinksBoard is a modern panel system built on Laravel 11, focusing on providing 
 
 ```bash
 # 1. Clone repository
-git clone -b compose --depth 1 https://github.com/cedar2025/Xboard
-cd Xboard
+git clone --depth 1 https://github.com/ElinksTeam/ElinksBoard
+cd ElinksBoard
 
-# 2. Run installation wizard
-docker compose run -it --rm \
-    -e ENABLE_SQLITE=true \
-    -e ENABLE_REDIS=true \
-    web php artisan xboard:install
+# 2. Copy Docker Compose configuration
+cp compose.sample.yaml docker-compose.yml
 
 # 3. Start services
 docker compose up -d
 ```
-
-**The installation wizard will guide you through:**
-1. Database configuration (SQLite/MySQL/PostgreSQL)
 2. Redis configuration
 3. **Logto authentication configuration** (Required)
 4. System initialization
@@ -88,7 +82,7 @@ We provide multiple installation methods, choose the one that suits you best:
 
 ### 🔄 Migration Guides
 
-Migrate from other systems to Xboard:
+Migrate from other systems to ElinksBoard:
 
 - [Migrate from v2board dev](docs/en/migration/v2board-dev.md)
 - [Migrate from v2board 1.7.4](docs/en/migration/v2board-1.7.4.md)
@@ -101,9 +95,14 @@ Migrate from other systems to Xboard:
 - [Redis Quick Reference](docs/REDIS_QUICK_REFERENCE.md) - Common commands and operations
 - [Implementation Summary](REDIS_IMPLEMENTATION_SUMMARY.md) - Redis feature implementation details
 
+### 🐳 Docker Documentation
+
+- [Docker Build Guide](DOCKER_BUILD.md) - Complete Docker image build and push documentation
+- [Docker Quick Start](DOCKER_QUICKSTART.md) - Quick reference for Docker operations
+
 ### 🛠️ Development Documentation
 
-- [Plugin Development Guide](docs/en/development/plugin-development-guide.md) - Develop Xboard plugins
+- [Plugin Development Guide](docs/en/development/plugin-development-guide.md) - Develop ElinksBoard plugins
 - [Performance Optimization](docs/en/development/performance.md) - Performance optimization suggestions
 - [Device Limit](docs/en/development/device-limit.md) - Device limit feature
 
@@ -156,4 +155,4 @@ Issues and Pull Requests are welcome to help improve the project.
 
 ## 📈 Star History
 
-[![Stargazers over time](https://starchart.cc/cedar2025/Xboard.svg)](https://starchart.cc/cedar2025/Xboard)
+[![Stargazers over time](https://starchart.cc/ElinksTeam/ElinksBoard.svg)](https://starchart.cc/ElinksTeam/ElinksBoard)

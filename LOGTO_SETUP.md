@@ -262,7 +262,7 @@ onMounted(async () => {
 - **完整文档：** `docs/LOGTO_INTEGRATION.md`
 - **Logto 文档：** https://docs.logto.io
 - **Logto 控制台：** https://cloud.logto.io
-- **Xboard GitHub：** https://github.com/cedar2025/Xboard
+- **Xboard GitHub：** https://github.com/ElinksTeam/ElinksBoard
 
 ## 🎯 后续步骤
 

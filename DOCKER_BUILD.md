@@ -197,7 +197,7 @@ docker stop elinksboard && docker rm elinksboard
 cp compose.sample.yaml docker-compose.yml
 
 # Edit docker-compose.yml to use your image
-# Change: image: ghcr.io/cedar2025/xboard:new
+# Change: image: ghcr.io/elinksteam/elinksboard:latest
 # To:     image: elinksboard/elinksboard:tagname
 
 # Start services

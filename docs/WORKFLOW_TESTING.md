@@ -94,8 +94,8 @@ git push origin master
 gh run list --workflow=docker-publish.yml
 
 # 4. 验证镜像
-docker pull ghcr.io/cedar2025/xboard:latest
-docker run --rm ghcr.io/cedar2025/xboard:latest php --version
+docker pull ghcr.io/elinksteam/elinksboard:latest
+docker run --rm ghcr.io/elinksteam/elinksboard:latest php --version
 ```
 
 #### 预期结果
