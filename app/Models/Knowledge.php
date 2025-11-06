@@ -11,7 +11,9 @@ class Knowledge extends Model
     protected $guarded = ['id'];
     protected $casts = [
         'show' => 'boolean',
+        'embedding' => 'array',
         'created_at' => 'timestamp',
         'updated_at' => 'timestamp',
+        'embedding_generated_at' => 'timestamp',
     ];
 }

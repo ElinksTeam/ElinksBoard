@@ -1,6 +1,8 @@
 <?php
 namespace App\Http\Routes\V1;
 
+use App\Http\Controllers\V1\User\AIChatController;
+use App\Http\Controllers\V1\User\AISearchController;
 use App\Http\Controllers\V1\User\CommController;
 use App\Http\Controllers\V1\User\CouponController;
 use App\Http\Controllers\V1\User\GiftCardController;
@@ -76,6 +78,14 @@ class UserRoute
             // Knowledge
             $router->get('/knowledge/fetch', [KnowledgeController::class, 'fetch']);
             $router->get('/knowledge/getCategory', [KnowledgeController::class, 'getCategory']);
+            // AI Search
+            $router->post('/ai/search', [AISearchController::class, 'search']);
+            $router->post('/ai/keyword-search', [AISearchController::class, 'keywordSearch']);
+            // AI Chat
+            $router->post('/ai/chat/session', [AIChatController::class, 'createSession']);
+            $router->post('/ai/chat', [AIChatController::class, 'chat']);
+            $router->post('/ai/chat/stream', [AIChatController::class, 'streamChat']);
+            $router->get('/ai/chat/session/{sessionId}', [AIChatController::class, 'getSession']);
             // Stat
             $router->get('/stat/getTrafficLog', [StatController::class, 'getTrafficLog']);
         });

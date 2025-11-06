@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Routes\V2;
 
+use App\Http\Controllers\V2\Admin\AIController;
 use App\Http\Controllers\V2\Admin\ConfigController;
 use App\Http\Controllers\V2\Admin\PlanController;
 use App\Http\Controllers\V2\Admin\Server\GroupController;
@@ -209,6 +210,15 @@ class AdminRoute
                 $router->post('/show', [KnowledgeController::class, 'show']);
                 $router->post('/drop', [KnowledgeController::class, 'drop']);
                 $router->post('/sort', [KnowledgeController::class, 'sort']);
+            });
+
+            // AI Management
+            $router->group([
+                'prefix' => 'ai'
+            ], function ($router) {
+                $router->post('/regenerate-embeddings', [AIController::class, 'regenerateEmbeddings']);
+                $router->post('/clear-embedding-cache', [AIController::class, 'clearEmbeddingCache']);
+                $router->post('/test-search', [AIController::class, 'testSearch']);
             });
 
             // Payment  

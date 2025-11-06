@@ -24,6 +24,8 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10",
         "linfo/linfo": "^4.0",
+        "logto/sdk": "^0.3.0",
+        "openai-php/client": "^0.18.0",
         "paragonie/sodium_compat": "^1.20",
         "php-curl-class/php-curl-class": "^8.6",
         "spatie/db-dumper": "^3.4",
@@ -31,8 +33,7 @@
         "symfony/http-client": "^7.0",
         "symfony/mailgun-mailer": "^7.0",
         "symfony/yaml": "^7.0",
-        "zoujingli/ip2region": "^2.0",
-        "logto/sdk": "^0.3.0"
+        "zoujingli/ip2region": "^2.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.9",
