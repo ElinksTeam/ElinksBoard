@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>AI 助手 - 移动端测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .test-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .test-section h2 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .test-section p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .test-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-bottom: 8px;
+        }
+
+        .test-btn:active {
+            transform: scale(0.98);
+        }
+
+        .test-btn.secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .info-box {
+            background: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 16px;
+        }
+
+        .info-box p {
+            color: #1e40af;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 12px;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .status {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 14px;
+            display: none;
+            z-index: 10000;
+        }
+
+        .status.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* 确保组件在移动端正确显示 */
+        @media (max-width: 640px) {
+            .ai-search-widget,
+            .ai-chat-widget {
+                bottom: calc(env(safe-area-inset-bottom) + 16px) !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📱 移动端测试</h1>
+        <p>测试 AI 组件在移动设备上的表现</p>
+    </div>
+
+    <div class="content">
+        <div class="test-section">
+            <h2>🔍 AI 搜索测试</h2>
+            <p>点击右下角的绿色搜索按钮，测试搜索功能</p>
+            <ul class="feature-list">
+                <li>全屏搜索面板</li>
+                <li>触摸优化</li>
+                <li>实时搜索结果</li>
+                <li>滑动关闭</li>
+            </ul>
+            <button class="test-btn" onclick="openSearch()">打开搜索</button>
+            <button class="test-btn secondary" onclick="testSearch()">测试搜索</button>
+        </div>
+
+        <div class="test-section">
+            <h2>💬 AI 聊天测试</h2>
+            <p>点击右下角的蓝色聊天按钮，测试对话功能</p>
+            <ul class="feature-list">
+                <li>全屏聊天窗口</li>
+                <li>自动滚动</li>
+                <li>输入框自适应</li>
+                <li>消息气泡</li>
+            </ul>
+            <button class="test-btn" onclick="openChat()">打开聊天</button>
+            <button class="test-btn secondary" onclick="testChat()">发送测试消息</button>
+        </div>
+
+        <div class="test-section">
+            <h2>📐 屏幕信息</h2>
+            <p id="screenInfo">加载中...</p>
+            <div class="info-box">
+                <p>组件会根据屏幕尺寸自动调整布局</p>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🎯 功能测试</h2>
+            <button class="test-btn" onclick="testResponsive()">测试响应式</button>
+            <button class="test-btn secondary" onclick="testTouch()">测试触摸事件</button>
+            <button class="test-btn secondary" onclick="testKeyboard()">测试键盘</button>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 性能测试</h2>
+            <p id="performanceInfo">点击按钮开始测试</p>
+            <button class="test-btn" onclick="testPerformance()">运行性能测试</button>
+        </div>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <!-- 加载 AI 组件 -->
+    <script src="/assets/ai-search-widget.js"></script>
+    <script src="/assets/ai-chat-widget.js"></script>
+    
+    <script>
+        // 获取 token
+        const token = localStorage.getItem('auth_token') || '';
+        
+        // 初始化组件
+        let searchWidget, chatWidget;
+        
+        function initWidgets() {
+            searchWidget = new AISearchWidget({
+                authToken: token,
+                placeholder: '搜索测试...',
+                minSimilarity: 0.6,
+                limit: 5,
+                onResultClick: function(result) {
+                    showStatus('点击了: ' + result.title);
+                }
+            });
+            
+            chatWidget = new AIChatWidget({
+                authToken: token,
+                position: 'bottom-right',
+                greeting: '👋 移动端测试模式',
+                streaming: false
+            });
+            
+            showStatus('组件初始化完成');
+        }
+
+        // 显示屏幕信息
+        function updateScreenInfo() {
+            const info = document.getElementById('screenInfo');
+            info.innerHTML = `
+                <strong>屏幕宽度:</strong> ${window.innerWidth}px<br>
+                <strong>屏幕高度:</strong> ${window.innerHeight}px<br>
+                <strong>设备像素比:</strong> ${window.devicePixelRatio}<br>
+                <strong>触摸支持:</strong> ${'ontouchstart' in window ? '是' : '否'}<br>
+                <strong>用户代理:</strong> ${navigator.userAgent.includes('Mobile') ? '移动设备' : '桌面设备'}
+            `;
+        }
+
+        // 测试函数
+        function openSearch() {
+            if (searchWidget) {
+                searchWidget.open();
+                showStatus('打开搜索面板');
+            }
+        }
+
+        function openChat() {
+            if (chatWidget) {
+                chatWidget.open();
+                showStatus('打开聊天窗口');
+            }
+        }
+
+        function testSearch() {
+            if (searchWidget) {
+                searchWidget.open();
+                setTimeout(() => {
+                    document.getElementById('aiSearchInput').value = '测试搜索';
+                    showStatus('已输入测试文本');
+                }, 500);
+            }
+        }
+
+        function testChat() {
+            if (chatWidget) {
+                chatWidget.open();
+                setTimeout(() => {
+                    document.getElementById('aiChatInput').value = '这是一条测试消息';
+                    showStatus('已输入测试消息');
+                }, 500);
+            }
+        }
+
+        function testResponsive() {
+            updateScreenInfo();
+            showStatus('响应式测试完成');
+        }
+
+        function testTouch() {
+            if ('ontouchstart' in window) {
+                showStatus('✓ 触摸事件支持正常');
+            } else {
+                showStatus('✗ 不支持触摸事件');
+            }
+        }
+
+        function testKeyboard() {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.style.position = 'fixed';
+            input.style.top = '-100px';
+            document.body.appendChild(input);
+            input.focus();
+            
+            setTimeout(() => {
+                if (document.activeElement === input) {
+                    showStatus('✓ 键盘功能正常');
+                } else {
+                    showStatus('✗ 键盘可能有问题');
+                }
+                input.remove();
+            }, 100);
+        }
+
+        function testPerformance() {
+            const start = performance.now();
+            
+            // 模拟一些操作
+            for (let i = 0; i < 1000; i++) {
+                const div = document.createElement('div');
+                div.textContent = 'Test';
+            }
+            
+            const end = performance.now();
+            const time = (end - start).toFixed(2);
+            
+            const info = document.getElementById('performanceInfo');
+            info.innerHTML = `
+                <strong>执行时间:</strong> ${time}ms<br>
+                <strong>内存使用:</strong> ${(performance.memory ? (performance.memory.usedJSHeapSize / 1048576).toFixed(2) + 'MB' : '不支持')}<br>
+                <strong>性能评级:</strong> ${time < 10 ? '优秀' : time < 50 ? '良好' : '需要优化'}
+            `;
+            
+            showStatus('性能测试完成');
+        }
+
+        function showStatus(message) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.classList.add('show');
+            
+            setTimeout(() => {
+                status.classList.remove('show');
+            }, 2000);
+        }
+
+        // 初始化
+        window.addEventListener('load', function() {
+            initWidgets();
+            updateScreenInfo();
+        });
+
+        // 监听屏幕旋转
+        window.addEventListener('resize', updateScreenInfo);
+        window.addEventListener('orientationchange', function() {
+            setTimeout(updateScreenInfo, 100);
+        });
+
+        // 防止双击缩放
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+    </script>
+</body>
+</html>

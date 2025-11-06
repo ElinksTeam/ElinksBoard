@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 组件演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            text-align: center;
+            color: white;
+            margin-bottom: 60px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            font-size: 24px;
+            margin-bottom: 12px;
+            color: #111827;
+        }
+
+        .card p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .card ul {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .card li {
+            padding: 8px 0;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card li:before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .code-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .code-section h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #111827;
+        }
+
+        .code-block {
+            background: #1f2937;
+            color: #f3f4f6;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .code-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>🚀 AI 智能组件</h1>
+            <p>为您的网站添加强大的 AI 搜索和聊天功能</p>
+        </div>
+
+        <div class="cards">
+            <div class="card">
+                <h2>🔍 AI 搜索组件</h2>
+                <p>智能语义搜索，快速找到相关内容</p>
+                <ul>
+                    <li>向量相似度搜索</li>
+                    <li>实时搜索结果</li>
+                    <li>响应式设计</li>
+                    <li>可自定义样式</li>
+                </ul>
+                <a href="#search-demo" class="btn">查看演示</a>
+            </div>
+
+            <div class="card">
+                <h2>💬 AI 聊天组件</h2>
+                <p>智能对话助手，提供即时帮助</p>
+                <ul>
+                    <li>上下文理解</li>
+                    <li>会话历史</li>
+                    <li>来源引用</li>
+                    <li>流式响应</li>
+                </ul>
+                <a href="#chat-demo" class="btn">查看演示</a>
+            </div>
+
+            <div class="card">
+                <h2>📱 完整页面</h2>
+                <p>独立的 AI 助手页面</p>
+                <ul>
+                    <li>搜索和聊天集成</li>
+                    <li>移动端优化</li>
+                    <li>现代化界面</li>
+                    <li>即开即用</li>
+                </ul>
+                <a href="/ai-assistant.html" class="btn">打开页面</a>
+            </div>
+        </div>
+
+        <div class="code-section">
+            <h2>📦 快速集成</h2>
+            
+            <div class="code-label">1. 引入脚本</div>
+            <div class="code-block">
+                <pre>&lt;!-- AI 搜索组件 --&gt;
+&lt;script src="/assets/ai-search-widget.js"&gt;&lt;/script&gt;
+
+&lt;!-- AI 聊天组件 --&gt;
+&lt;script src="/assets/ai-chat-widget.js"&gt;&lt;/script&gt;</pre>
+            </div>
+
+            <div class="code-label">2. 初始化组件</div>
+            <div class="code-block">
+                <pre>&lt;script&gt;
+// 初始化 AI 搜索
+const searchWidget = new AISearchWidget({
+    authToken: 'your-auth-token',
+    placeholder: '搜索知识库...',
+    minSimilarity: 0.7,
+    limit: 5
+});
+
+// 初始化 AI 聊天
+const chatWidget = new AIChatWidget({
+    authToken: 'your-auth-token',
+    position: 'bottom-right',
+    greeting: '你好！有什么可以帮助你的吗？',
+    streaming: true
+});
+&lt;/script&gt;</pre>
+            </div>
+
+            <div class="code-label">3. 自动初始化（可选）</div>
+            <div class="code-block">
+                <pre>&lt;!-- 添加 data 属性自动初始化 --&gt;
+&lt;div data-ai-search-widget&gt;&lt;/div&gt;
+&lt;div data-ai-chat-widget&gt;&lt;/div&gt;</pre>
+            </div>
+
+            <div class="code-label">4. 主题集成</div>
+            <div class="code-block">
+                <pre>&lt;!-- 在主题的 custom_html 中添加 --&gt;
+&lt;script src="/assets/ai-search-widget.js"&gt;&lt;/script&gt;
+&lt;script src="/assets/ai-chat-widget.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+document.addEventListener('DOMContentLoaded', function() {
+    // 从 localStorage 获取 token
+    const token = localStorage.getItem('auth_token');
+    
+    // 初始化组件
+    new AISearchWidget({ authToken: token });
+    new AIChatWidget({ authToken: token });
+});
+&lt;/script&gt;</pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载组件 -->
+    <script src="/assets/ai-search-widget.js"></script>
+    <script src="/assets/ai-chat-widget.js"></script>
+    <script>
+        // 演示用 - 实际使用时从 localStorage 获取
+        const demoToken = localStorage.getItem('auth_token') || '';
+        
+        // 初始化搜索组件
+        new AISearchWidget({
+            authToken: demoToken,
+            placeholder: '试试搜索...',
+            minSimilarity: 0.6,
+            limit: 8
+        });
+
+        // 初始化聊天组件
+        new AIChatWidget({
+            authToken: demoToken,
+            position: 'bottom-right',
+            greeting: '👋 你好！我是 AI 助手，有什么可以帮助你的吗？',
+            streaming: false
+        });
+    </script>
+</body>
+</html>
