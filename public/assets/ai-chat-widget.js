@@ -487,6 +487,12 @@
             const message = input.value.trim();
             if (!message) return;
 
+            // Check authentication
+            if (!this.options.authToken) {
+                this.addMessage('assistant', '请先登录以使用聊天功能');
+                return;
+            }
+
             const sendBtn = document.getElementById('aiChatSendBtn');
             sendBtn.disabled = true;
 
@@ -509,7 +515,13 @@
             } catch (error) {
                 console.error('Chat error:', error);
                 this.hideTyping();
-                this.addMessage('assistant', '抱歉，发送失败。请稍后再试。');
+                
+                // Check if it's an auth error
+                if (error.message && error.message.includes('401')) {
+                    this.addMessage('assistant', '登录已过期，请重新登录');
+                } else {
+                    this.addMessage('assistant', '抱歉，发送失败。请稍后再试。');
+                }
             } finally {
                 sendBtn.disabled = false;
             }
@@ -548,8 +560,14 @@
                 })
             });
 
-            const data = await response.json();
             this.hideTyping();
+
+            // Handle authentication errors
+            if (response.status === 401 || response.status === 403) {
+                throw new Error('401: Authentication failed');
+            }
+
+            const data = await response.json();
 
             if (data.data) {
                 this.sessionId = data.data.session_id;

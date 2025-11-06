@@ -460,10 +460,76 @@
         // Configuration
         const API_BASE = '/api/v1/user';
         let chatSessionId = null;
-        let authToken = localStorage.getItem('auth_token') || '';
+        let authToken = localStorage.getItem('auth_token') || localStorage.getItem('authorization') || '';
+
+        // Check authentication on load
+        function checkAuth() {
+            if (!authToken) {
+                showAuthRequired();
+                return false;
+            }
+            return true;
+        }
+
+        function showAuthRequired() {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+            `;
+            
+            overlay.innerHTML = `
+                <div style="
+                    background: white;
+                    border-radius: 16px;
+                    padding: 40px;
+                    max-width: 400px;
+                    text-align: center;
+                    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+                ">
+                    <div style="font-size: 48px; margin-bottom: 16px;">🔒</div>
+                    <h2 style="font-size: 24px; margin-bottom: 12px; color: #111827;">需要登录</h2>
+                    <p style="color: #6b7280; margin-bottom: 24px;">请先登录以使用 AI 助手功能</p>
+                    <button onclick="window.location.href='/'" style="
+                        width: 100%;
+                        padding: 12px 24px;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        font-size: 16px;
+                        font-weight: 600;
+                        cursor: pointer;
+                    ">前往登录</button>
+                </div>
+            `;
+            
+            document.body.appendChild(overlay);
+        }
+
+        async function handleApiError(response) {
+            if (response.status === 401 || response.status === 403) {
+                localStorage.removeItem('auth_token');
+                localStorage.removeItem('authorization');
+                authToken = '';
+                showAuthRequired();
+                return true;
+            }
+            return false;
+        }
 
         // Search functionality
         async function performSearch() {
+            if (!checkAuth()) return;
+            
             const query = document.getElementById('searchInput').value.trim();
             if (!query) return;
 
@@ -487,6 +553,8 @@
                         min_similarity: 0.7
                     })
                 });
+
+                if (await handleApiError(response)) return;
 
                 const data = await response.json();
                 
@@ -530,6 +598,8 @@
 
         // Chat functionality
         async function sendMessage() {
+            if (!checkAuth()) return;
+            
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
             if (!message) return;
@@ -558,6 +628,11 @@
                         session_id: chatSessionId
                     })
                 });
+
+                if (await handleApiError(response)) {
+                    sendBtn.disabled = false;
+                    return;
+                }
 
                 const data = await response.json();
                 
@@ -643,10 +718,32 @@
             this.style.height = Math.min(this.scrollHeight, 120) + 'px';
         });
 
-        // Check authentication
-        if (!authToken) {
-            console.warn('No auth token found. Some features may not work.');
-        }
+        // Check authentication on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            if (!authToken) {
+                console.warn('No auth token found.');
+                // Show a subtle warning banner instead of blocking immediately
+                const banner = document.createElement('div');
+                banner.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    background: #fef3c7;
+                    color: #92400e;
+                    padding: 12px 20px;
+                    text-align: center;
+                    z-index: 9999;
+                    font-size: 14px;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                `;
+                banner.innerHTML = `
+                    ⚠️ 您尚未登录，部分功能可能无法使用。
+                    <a href="/" style="color: #92400e; font-weight: 600; text-decoration: underline; margin-left: 8px;">立即登录</a>
+                `;
+                document.body.prepend(banner);
+            }
+        });
     </script>
 </body>
 </html>

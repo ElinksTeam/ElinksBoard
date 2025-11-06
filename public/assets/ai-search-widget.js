@@ -354,6 +354,12 @@
             const query = input.value.trim();
             if (!query) return;
 
+            // Check authentication
+            if (!this.options.authToken) {
+                this.showEmpty('请先登录以使用搜索功能');
+                return;
+            }
+
             const button = document.getElementById('aiSearchButton');
             const resultsContainer = document.getElementById('aiSearchResults');
 
@@ -374,6 +380,12 @@
                         min_similarity: this.options.minSimilarity
                     })
                 });
+
+                // Handle authentication errors
+                if (response.status === 401 || response.status === 403) {
+                    this.showEmpty('登录已过期，请重新登录');
+                    return;
+                }
 
                 const data = await response.json();
                 

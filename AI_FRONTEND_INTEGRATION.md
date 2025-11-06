@@ -15,9 +15,11 @@
 public/
 ├── ai-assistant.html              # 完整的 AI 助手页面
 ├── ai-widgets-demo.html           # 组件演示页面
+├── ai-mobile-test.html            # 移动端测试页面
 └── assets/
     ├── ai-search-widget.js        # AI 搜索组件
-    └── ai-chat-widget.js          # AI 聊天组件
+    ├── ai-chat-widget.js          # AI 聊天组件
+    └── ai-auth-helper.js          # 认证辅助工具
 ```
 
 ## 方式一：独立页面
@@ -152,11 +154,12 @@ new AIChatWidget({
 
 ### 在 Xboard 主题中集成
 
-#### 1. 通过自定义 HTML
+#### 1. 通过自定义 HTML（推荐）
 在后台 **主题配置** → **自定义页脚HTML** 中添加：
 
 ```html
-<!-- AI 组件 -->
+<!-- AI 组件 + 认证辅助 -->
+<script src="/assets/ai-auth-helper.js"></script>
 <script src="/assets/ai-search-widget.js"></script>
 <script src="/assets/ai-chat-widget.js"></script>
 <script>
@@ -169,9 +172,18 @@ new AIChatWidget({
     }
     
     function initAIWidgets() {
-        // 获取认证 token
-        const token = localStorage.getItem('auth_token') || 
-                     localStorage.getItem('authorization') || '';
+        // 使用认证辅助工具获取 token
+        const token = window.aiAuthHelper ? window.aiAuthHelper.getToken() : 
+                     (localStorage.getItem('auth_token') || 
+                      localStorage.getItem('authorization') || '');
+        
+        // 如果未登录，显示提示
+        if (!token && window.aiAuthHelper) {
+            window.aiAuthHelper.showBanner(
+                '⚠️ 您尚未登录，AI 功能可能无法使用。<a href="/" style="color: inherit; font-weight: 600; text-decoration: underline; margin-left: 8px;">立即登录</a>',
+                'warning'
+            );
+        }
         
         // 初始化搜索组件
         new AISearchWidget({
@@ -231,6 +243,229 @@ window.addEventListener('load', function() {
     }
 });
 </script>
+```
+
+## 认证集成
+
+### 认证辅助工具
+
+AI 组件提供了认证辅助工具来处理登录状态检测和 token 管理。
+
+#### 基本使用
+
+```html
+<script src="/assets/ai-auth-helper.js"></script>
+<script>
+// 使用全局实例
+const token = window.aiAuthHelper.getToken();
+const isLoggedIn = window.aiAuthHelper.isAuthenticated();
+
+// 或创建自定义实例
+const authHelper = new AIAuthHelper({
+    tokenKeys: ['auth_token', 'authorization'],
+    loginUrl: '/login',
+    checkInterval: 300000 // 5分钟检查一次
+});
+</script>
+```
+
+#### 配置选项
+
+```javascript
+new AIAuthHelper({
+    // Token 存储键名（按顺序查找）
+    tokenKeys: ['auth_token', 'authorization', 'token'],
+    
+    // API 基础路径
+    apiBase: '/api/v1/user',
+    
+    // 登录页面 URL
+    loginUrl: '/',
+    
+    // 定期检查间隔（毫秒，0 表示禁用）
+    checkInterval: 300000,
+    
+    // 自定义回调
+    onAuthRequired: function() {
+        console.log('需要登录');
+    },
+    
+    onAuthExpired: function() {
+        console.log('登录已过期');
+    }
+});
+```
+
+#### 主要方法
+
+```javascript
+// 获取 token
+const token = authHelper.getToken();
+
+// 设置 token
+authHelper.setToken('your-token');
+
+// 清除 token
+authHelper.clearToken();
+
+// 检查是否已登录
+if (authHelper.isAuthenticated()) {
+    console.log('已登录');
+}
+
+// 验证 token 是否有效
+const isValid = await authHelper.validateToken();
+
+// 显示登录对话框
+authHelper.handleAuthRequired();
+
+// 显示登录过期对话框
+authHelper.handleAuthExpired();
+
+// 显示提示横幅
+authHelper.showBanner('提示信息', 'warning'); // warning, error, info, success
+```
+
+### 组件认证处理
+
+#### 搜索组件
+
+```javascript
+const searchWidget = new AISearchWidget({
+    authToken: window.aiAuthHelper.getToken(),
+    // ... 其他配置
+});
+
+// 组件会自动处理：
+// - 未登录时显示提示
+// - 401/403 错误时显示登录过期
+```
+
+#### 聊天组件
+
+```javascript
+const chatWidget = new AIChatWidget({
+    authToken: window.aiAuthHelper.getToken(),
+    // ... 其他配置
+});
+
+// 组件会自动处理：
+// - 未登录时显示提示消息
+// - 401/403 错误时显示登录过期消息
+```
+
+### 完整集成示例
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI 助手</title>
+</head>
+<body>
+    <!-- 引入认证辅助 -->
+    <script src="/assets/ai-auth-helper.js"></script>
+    
+    <!-- 引入 AI 组件 -->
+    <script src="/assets/ai-search-widget.js"></script>
+    <script src="/assets/ai-chat-widget.js"></script>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 检查登录状态
+        if (!window.aiAuthHelper.isAuthenticated()) {
+            window.aiAuthHelper.showBanner(
+                '您尚未登录，部分功能可能无法使用。<a href="/login">立即登录</a>',
+                'warning'
+            );
+        }
+        
+        // 获取 token
+        const token = window.aiAuthHelper.getToken();
+        
+        // 初始化组件
+        new AISearchWidget({ authToken: token });
+        new AIChatWidget({ authToken: token });
+        
+        // 定期验证 token（可选）
+        setInterval(async () => {
+            const isValid = await window.aiAuthHelper.validateToken();
+            if (!isValid) {
+                console.log('Token 已失效');
+            }
+        }, 300000); // 每5分钟检查一次
+    });
+    </script>
+</body>
+</html>
+```
+
+### 错误处理
+
+#### 未登录处理
+
+```javascript
+// 方式1：显示对话框（阻塞式）
+window.aiAuthHelper.handleAuthRequired();
+
+// 方式2：显示横幅（非阻塞式）
+window.aiAuthHelper.showBanner(
+    '请先登录以使用此功能',
+    'warning'
+);
+
+// 方式3：自定义处理
+const authHelper = new AIAuthHelper({
+    onAuthRequired: function() {
+        // 自定义逻辑
+        alert('请先登录');
+        window.location.href = '/login';
+    }
+});
+```
+
+#### 登录过期处理
+
+```javascript
+// 方式1：显示对话框
+window.aiAuthHelper.handleAuthExpired();
+
+// 方式2：自定义处理
+const authHelper = new AIAuthHelper({
+    onAuthExpired: function() {
+        // 清除本地数据
+        localStorage.clear();
+        // 跳转到登录页
+        window.location.href = '/login?expired=1';
+    }
+});
+```
+
+#### API 错误处理
+
+```javascript
+async function callAPI() {
+    try {
+        const response = await fetch('/api/v1/user/ai/search', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${window.aiAuthHelper.getToken()}`
+            },
+            body: JSON.stringify({ query: 'test' })
+        });
+        
+        // 检查认证错误
+        if (response.status === 401 || response.status === 403) {
+            window.aiAuthHelper.handleAuthExpired();
+            return;
+        }
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('API 调用失败:', error);
+    }
+}
 ```
 
 ## 方式四：自定义实现
