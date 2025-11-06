@@ -9,9 +9,11 @@
     class AIAuthHelper {
         constructor(options = {}) {
             this.options = {
-                tokenKeys: options.tokenKeys || ['auth_token', 'authorization', 'token'],
-                apiBase: options.apiBase || '/api/v1/user',
+                tokenKeys: options.tokenKeys || ['auth_data', 'auth_token', 'authorization', 'token'],
+                apiBase: options.apiBase || '/api/v1',
                 loginUrl: options.loginUrl || '/',
+                logtoSignInUrl: options.logtoSignInUrl || '/api/v1/passport/auth/logto/sign-in',
+                useLogto: options.useLogto !== false, // Default to true
                 onAuthRequired: options.onAuthRequired || null,
                 onAuthExpired: options.onAuthExpired || null,
                 checkInterval: options.checkInterval || 300000, // 5 minutes
@@ -19,6 +21,7 @@
             };
 
             this.token = null;
+            this.authData = null;
             this.checkTimer = null;
             this.init();
         }
@@ -32,11 +35,27 @@
 
         /**
          * 从 localStorage 获取 token
+         * 优先从 auth_data 中提取 token（Logto 方式）
          */
         getToken() {
+            // 首先尝试从 auth_data 获取（Logto 认证后的数据）
+            const authDataStr = localStorage.getItem('auth_data');
+            if (authDataStr) {
+                try {
+                    const authData = JSON.parse(authDataStr);
+                    if (authData && authData.token) {
+                        this.authData = authData;
+                        return authData.token;
+                    }
+                } catch (e) {
+                    console.warn('Failed to parse auth_data:', e);
+                }
+            }
+
+            // 回退到其他 token 键
             for (const key of this.options.tokenKeys) {
                 const token = localStorage.getItem(key);
-                if (token) {
+                if (token && key !== 'auth_data') {
                     return token;
                 }
             }
@@ -56,9 +75,39 @@
          */
         clearToken() {
             this.token = null;
+            this.authData = null;
             for (const key of this.options.tokenKeys) {
                 localStorage.removeItem(key);
             }
+        }
+
+        /**
+         * 获取用户信息
+         */
+        getUserInfo() {
+            if (this.authData) {
+                return this.authData;
+            }
+
+            const authDataStr = localStorage.getItem('auth_data');
+            if (authDataStr) {
+                try {
+                    this.authData = JSON.parse(authDataStr);
+                    return this.authData;
+                } catch (e) {
+                    console.warn('Failed to parse auth_data:', e);
+                }
+            }
+
+            return null;
+        }
+
+        /**
+         * 检查是否是管理员
+         */
+        isAdmin() {
+            const userInfo = this.getUserInfo();
+            return userInfo && userInfo.is_admin === true;
         }
 
         /**
@@ -103,6 +152,31 @@
             if (this.options.onAuthRequired) {
                 this.options.onAuthRequired();
             } else {
+                if (this.options.useLogto) {
+                    this.redirectToLogtoSignIn();
+                } else {
+                    this.showAuthRequiredDialog();
+                }
+            }
+        }
+
+        /**
+         * 重定向到 Logto 登录
+         */
+        async redirectToLogtoSignIn() {
+            try {
+                const response = await fetch(this.options.logtoSignInUrl);
+                const data = await response.json();
+                
+                if (data.data && data.data.sign_in_url) {
+                    // 保存当前页面 URL，登录后返回
+                    sessionStorage.setItem('logto_return_url', window.location.href);
+                    window.location.href = data.data.sign_in_url;
+                } else {
+                    this.showAuthRequiredDialog();
+                }
+            } catch (error) {
+                console.error('Failed to get Logto sign-in URL:', error);
                 this.showAuthRequiredDialog();
             }
         }
@@ -127,10 +201,16 @@
             this.showDialog({
                 icon: '🔒',
                 title: '需要登录',
-                message: '请先登录以使用此功能',
-                buttonText: '前往登录',
+                message: this.options.useLogto ? 
+                    '请使用 Logto 登录以使用此功能' : 
+                    '请先登录以使用此功能',
+                buttonText: this.options.useLogto ? '使用 Logto 登录' : '前往登录',
                 onConfirm: () => {
-                    window.location.href = this.options.loginUrl;
+                    if (this.options.useLogto) {
+                        this.redirectToLogtoSignIn();
+                    } else {
+                        window.location.href = this.options.loginUrl;
+                    }
                 }
             });
         }
