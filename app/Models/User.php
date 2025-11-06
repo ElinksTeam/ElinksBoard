@@ -18,6 +18,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $password_salt 加密盐
  * @property string|null $logto_sub Logto用户ID
  * @property string $auth_provider 认证提供商
+ * @property array|null $logto_roles Logto用户角色
+ * @property array|null $logto_organizations Logto用户组织
+ * @property \Illuminate\Support\Carbon|null $logto_roles_synced_at 角色同步时间
  * @property string $token 邀请码
  * @property string $uuid
  * @property int|null $invite_user_id 邀请人
@@ -77,6 +80,9 @@ class User extends Authenticatable
         'commission_rate' => 'float',
         'next_reset_at' => 'timestamp',
         'last_reset_at' => 'timestamp',
+        'logto_roles' => 'array',
+        'logto_organizations' => 'array',
+        'logto_roles_synced_at' => 'datetime',
     ];
     protected $hidden = ['password'];
 
@@ -224,5 +230,71 @@ class User extends Authenticatable
         
         $used = $this->getTotalUsedTraffic();
         return min(100, ($used / $total) * 100);
+    }
+
+    /**
+     * Check if user has a specific Logto role
+     *
+     * @param string $role Role name
+     * @return bool
+     */
+    public function hasLogtoRole(string $role): bool
+    {
+        if (!$this->logto_roles || !is_array($this->logto_roles)) {
+            return false;
+        }
+        
+        return in_array($role, $this->logto_roles);
+    }
+
+    /**
+     * Check if user has admin access (via Logto role or local flag)
+     *
+     * @return bool
+     */
+    public function hasAdminAccess(): bool
+    {
+        // Check Logto admin role first (if authenticated via Logto)
+        if ($this->auth_provider === 'logto' && $this->hasLogtoRole('admin')) {
+            return true;
+        }
+        
+        // Fallback to local is_admin flag
+        return (bool) $this->is_admin;
+    }
+
+    /**
+     * Check if user belongs to a specific Logto organization
+     *
+     * @param string $organizationId Organization ID
+     * @return bool
+     */
+    public function belongsToOrganization(string $organizationId): bool
+    {
+        if (!$this->logto_organizations || !is_array($this->logto_organizations)) {
+            return false;
+        }
+        
+        return in_array($organizationId, $this->logto_organizations);
+    }
+
+    /**
+     * Get all Logto roles
+     *
+     * @return array
+     */
+    public function getLogtoRoles(): array
+    {
+        return $this->logto_roles ?? [];
+    }
+
+    /**
+     * Get all Logto organizations
+     *
+     * @return array
+     */
+    public function getLogtoOrganizations(): array
+    {
+        return $this->logto_organizations ?? [];
     }
 }

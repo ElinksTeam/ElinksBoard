@@ -50,6 +50,8 @@ class AdminRoute
                 $router->post('/test', [LogtoController::class, 'testConnection']);
                 $router->get('/instructions', [LogtoController::class, 'getInstructions']);
                 $router->get('/stats', [LogtoController::class, 'getStats']);
+                $router->get('/users-with-roles', [LogtoController::class, 'getUsersWithRoles']);
+                $router->post('/sync-user-roles', [LogtoController::class, 'syncUserRoles']);
             });
 
             // Plan

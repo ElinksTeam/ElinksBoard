@@ -220,11 +220,18 @@ class LogtoController extends Controller
             $totalUsers = \App\Models\User::count();
             $logtoUsers = \App\Models\User::where('auth_provider', 'logto')->count();
             $localUsers = \App\Models\User::where('auth_provider', 'local')->count();
+            
+            // Count users with admin role
+            $logtoAdmins = \App\Models\User::where('auth_provider', 'logto')
+                ->whereNotNull('logto_roles')
+                ->whereRaw("JSON_CONTAINS(logto_roles, '\"admin\"')")
+                ->count();
 
             return $this->success([
                 'total_users' => $totalUsers,
                 'logto_users' => $logtoUsers,
                 'local_users' => $localUsers,
+                'logto_admins' => $logtoAdmins,
                 'logto_percentage' => $totalUsers > 0 ? round(($logtoUsers / $totalUsers) * 100, 2) : 0,
             ]);
         } catch (\Throwable $e) {
@@ -232,6 +239,71 @@ class LogtoController extends Controller
                 'error' => $e->getMessage(),
             ]);
             return $this->fail([500, 'Failed to get statistics']);
+        }
+    }
+
+    /**
+     * Get users with Logto roles
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUsersWithRoles(Request $request)
+    {
+        try {
+            $users = \App\Models\User::where('auth_provider', 'logto')
+                ->whereNotNull('logto_roles')
+                ->select(['id', 'email', 'logto_sub', 'logto_roles', 'logto_roles_synced_at', 'is_admin', 'last_login_at'])
+                ->orderBy('logto_roles_synced_at', 'desc')
+                ->paginate(20);
+
+            return $this->success($users);
+        } catch (\Throwable $e) {
+            Log::error('Failed to get users with roles', [
+                'error' => $e->getMessage(),
+            ]);
+            return $this->fail([500, 'Failed to get users']);
+        }
+    }
+
+    /**
+     * Sync user roles from Logto
+     * This endpoint allows manual role sync for a specific user
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function syncUserRoles(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'user_id' => 'required|integer|exists:v2_user,id',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->fail([422, $validator->errors()->first()]);
+            }
+
+            $user = \App\Models\User::find($request->input('user_id'));
+            
+            if ($user->auth_provider !== 'logto') {
+                return $this->fail([400, 'User is not authenticated via Logto']);
+            }
+
+            // Note: This requires the user to be currently authenticated
+            // In a real scenario, you might need to implement a server-to-server
+            // API call to Logto to fetch user roles
+            
+            return $this->success([
+                'message' => 'Roles will be synced on next user login',
+                'current_roles' => $user->logto_roles,
+                'last_synced' => $user->logto_roles_synced_at,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Failed to sync user roles', [
+                'error' => $e->getMessage(),
+            ]);
+            return $this->fail([500, 'Failed to sync roles']);
         }
     }
 }

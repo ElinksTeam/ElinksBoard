@@ -122,6 +122,76 @@ class LogtoAuthService
     }
 
     /**
+     * Get user roles from Logto
+     *
+     * @return array User roles
+     */
+    public function getUserRoles(): array
+    {
+        $idTokenClaims = $this->getIdTokenClaims();
+        
+        if (!$idTokenClaims) {
+            return [];
+        }
+
+        // Roles can be in different claims depending on Logto configuration
+        // Check common claim names
+        $roles = $idTokenClaims->roles ?? 
+                 $idTokenClaims->role ?? 
+                 $idTokenClaims->{'https://logto.io/claims/roles'} ?? 
+                 [];
+
+        // Ensure it's an array
+        if (is_string($roles)) {
+            $roles = [$roles];
+        }
+
+        return is_array($roles) ? $roles : [];
+    }
+
+    /**
+     * Get user organizations from Logto
+     *
+     * @return array User organizations
+     */
+    public function getUserOrganizations(): array
+    {
+        $idTokenClaims = $this->getIdTokenClaims();
+        
+        if (!$idTokenClaims) {
+            return [];
+        }
+
+        $organizations = $idTokenClaims->organizations ?? 
+                        $idTokenClaims->{'https://logto.io/claims/organizations'} ?? 
+                        [];
+
+        return is_array($organizations) ? $organizations : [];
+    }
+
+    /**
+     * Check if user has a specific role
+     *
+     * @param string $role Role name to check
+     * @return bool
+     */
+    public function hasRole(string $role): bool
+    {
+        $roles = $this->getUserRoles();
+        return in_array($role, $roles);
+    }
+
+    /**
+     * Check if user has admin role
+     *
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
+    }
+
+    /**
      * Synchronize or create local user from Logto user information
      *
      * @return User|null Local user instance
@@ -225,6 +295,15 @@ class LogtoAuthService
             $user->phone = $logtoUser->phone_number;
         }
         
+        // Set roles from Logto
+        $roles = $this->getUserRoles();
+        $user->logto_roles = $roles;
+        $user->logto_roles_synced_at = now();
+        
+        // Set organizations from Logto
+        $organizations = $this->getUserOrganizations();
+        $user->logto_organizations = $organizations;
+        
         $user->last_login_at = time();
         $user->save();
 
@@ -277,6 +356,26 @@ class LogtoAuthService
         // Update phone if provided
         if (isset($logtoUser->phone_number) && $user->phone !== $logtoUser->phone_number) {
             $user->phone = $logtoUser->phone_number;
+            $updated = true;
+        }
+
+        // Sync roles from Logto
+        $roles = $this->getUserRoles();
+        if (json_encode($user->logto_roles) !== json_encode($roles)) {
+            $user->logto_roles = $roles;
+            $user->logto_roles_synced_at = now();
+            $updated = true;
+            
+            \Log::info('Synced user roles from Logto', [
+                'user_id' => $user->id,
+                'roles' => $roles,
+            ]);
+        }
+
+        // Sync organizations from Logto
+        $organizations = $this->getUserOrganizations();
+        if (json_encode($user->logto_organizations) !== json_encode($organizations)) {
+            $user->logto_organizations = $organizations;
             $updated = true;
         }
 
