@@ -10,15 +10,15 @@ use Illuminate\Support\Str;
 
 class AIChatService
 {
-    protected $openAIService;
+    protected $aiProvider;
     protected $knowledgeBaseService;
     protected $systemPrompt;
 
     public function __construct(
-        OpenAIService $openAIService,
-        KnowledgeBaseService $knowledgeBaseService
+        KnowledgeBaseService $knowledgeBaseService,
+        ?string $provider = null
     ) {
-        $this->openAIService = $openAIService;
+        $this->aiProvider = AIProviderFactory::make($provider);
         $this->knowledgeBaseService = $knowledgeBaseService;
         $this->systemPrompt = Config::get('services.openai.system_prompt', $this->getDefaultSystemPrompt());
     }
@@ -68,7 +68,7 @@ class AIChatService
             
             $messages = $this->buildMessages($userMessage, $context, $conversationHistory);
             
-            $response = $this->openAIService->chat($messages);
+            $response = $this->aiProvider->chat($messages);
             
             if ($conversation) {
                 $conversation->addMessage('user', $userMessage);
@@ -119,7 +119,7 @@ class AIChatService
             
             $messages = $this->buildMessages($userMessage, $context, $conversationHistory);
             
-            $this->openAIService->streamChat($messages, function ($chunk) use ($callback, &$fullResponse) {
+            $this->aiProvider->streamChat($messages, function ($chunk) use ($callback, &$fullResponse) {
                 $fullResponse .= $chunk;
                 $callback($chunk);
             });

@@ -6,7 +6,7 @@ use OpenAI;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 
-class OpenAIService
+class OpenAIService implements AIProviderInterface
 {
     protected $client;
     protected $model;
