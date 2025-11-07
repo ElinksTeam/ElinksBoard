@@ -2,6 +2,14 @@
 
 ## 🚀 快速開始
 
+### 選擇 AI 提供商
+
+ElinksBoard 支援兩種 AI 提供商：
+- **OpenAI** - GPT 系列模型，功能強大
+- **Gemini** - Google 的 AI 模型，成本效益高，提供免費額度
+
+詳細的 Gemini 整合指南請參考：[GEMINI_INTEGRATION.md](GEMINI_INTEGRATION.md)
+
 ### 1. 安裝依賴
 
 ```bash
@@ -16,12 +24,17 @@ composer require guzzlehttp/guzzle
 
 在 `.env` 文件中添加：
 
+#### 選項 A：使用 OpenAI（原有方式）
+
 ```env
 # OpenAI API 配置
 OPENAI_API_KEY=sk-your-api-key-here
 OPENAI_ORGANIZATION=org-your-org-id  # 可選
 OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 OPENAI_CHAT_MODEL=gpt-4-turbo-preview
+
+# AI 提供商選擇
+AI_DEFAULT_PROVIDER=openai
 
 # AI 功能開關
 AI_KNOWLEDGE_ENABLED=true
@@ -37,6 +50,38 @@ AI_SEARCH_RATE_LIMIT=30  # 每分鐘
 AI_DAILY_BUDGET=10.0  # USD
 AI_MONTHLY_BUDGET=100.0  # USD
 ```
+
+#### 選項 B：使用 Gemini（推薦，更經濟）
+
+```env
+# Gemini API 配置
+GEMINI_API_KEY=your-gemini-api-key-here
+GEMINI_MODEL=gemini-2.0-flash-exp
+GEMINI_EMBEDDING_MODEL=text-embedding-004
+
+# AI 提供商選擇
+AI_DEFAULT_PROVIDER=gemini
+
+# AI 功能開關
+AI_KNOWLEDGE_ENABLED=true
+AI_SEMANTIC_SEARCH_ENABLED=true
+AI_CHAT_ENABLED=true
+AI_RECOMMENDATIONS_ENABLED=true
+
+# 速率限制
+AI_CHAT_RATE_LIMIT=10  # 每小時
+AI_SEARCH_RATE_LIMIT=30  # 每分鐘
+
+# 成本控制
+AI_DAILY_BUDGET=10.0  # USD
+AI_MONTHLY_BUDGET=100.0  # USD
+```
+
+**Gemini 優勢：**
+- ✅ 每天 1500 次免費請求
+- ✅ 成本約為 OpenAI 的一半
+- ✅ 速度快
+- 詳細資訊：[GEMINI_INTEGRATION.md](GEMINI_INTEGRATION.md)
 
 ### 3. 執行遷移
 

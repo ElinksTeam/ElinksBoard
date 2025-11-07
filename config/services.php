@@ -38,4 +38,14 @@ return [
         'system_prompt' => env('OPENAI_SYSTEM_PROMPT'),
     ],
 
+    'gemini' => [
+        'api_key' => env('GEMINI_API_KEY'),
+        'model' => env('GEMINI_MODEL', 'gemini-2.0-flash-exp'),
+        'embedding_model' => env('GEMINI_EMBEDDING_MODEL', 'text-embedding-004'),
+    ],
+
+    'ai' => [
+        'default_provider' => env('AI_DEFAULT_PROVIDER', 'openai'), // 'openai' or 'gemini'
+    ],
+
 ];

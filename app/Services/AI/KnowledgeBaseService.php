@@ -9,19 +9,19 @@ use Illuminate\Support\Facades\Log;
 
 class KnowledgeBaseService
 {
-    protected $openAIService;
+    protected $aiProvider;
     protected $cachePrefix = 'kb_embedding:';
     protected $cacheTTL = 86400;
 
-    public function __construct(OpenAIService $openAIService)
+    public function __construct(?string $provider = null)
     {
-        $this->openAIService = $openAIService;
+        $this->aiProvider = AIProviderFactory::make($provider);
     }
 
     public function generateEmbedding(Knowledge $knowledge): array
     {
         $text = $this->prepareTextForEmbedding($knowledge);
-        $embedding = $this->openAIService->createEmbedding($text);
+        $embedding = $this->aiProvider->createEmbedding($text);
         
         Cache::put($this->cachePrefix . $knowledge->id, $embedding, $this->cacheTTL);
         
@@ -33,7 +33,7 @@ class KnowledgeBaseService
         $knowledgeItems = Knowledge::whereIn('id', $knowledgeIds)->get();
         $texts = $knowledgeItems->map(fn($k) => $this->prepareTextForEmbedding($k))->toArray();
         
-        $embeddings = $this->openAIService->createBatchEmbeddings($texts);
+        $embeddings = $this->aiProvider->createBatchEmbeddings($texts);
         
         foreach ($knowledgeItems as $index => $knowledge) {
             Cache::put($this->cachePrefix . $knowledge->id, $embeddings[$index], $this->cacheTTL);
@@ -55,7 +55,7 @@ class KnowledgeBaseService
     public function semanticSearch(string $query, int $limit = 5, ?int $categoryId = null): array
     {
         try {
-            $queryEmbedding = $this->openAIService->createEmbedding($query);
+            $queryEmbedding = $this->aiProvider->createEmbedding($query);
             
             $knowledgeQuery = Knowledge::where('show', true);
             
