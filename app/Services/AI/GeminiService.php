@@ -2,6 +2,7 @@
 
 namespace App\Services\AI;
 
+use App\Exceptions\MissingAIApiKeyException;
 use Gemini\Gemini;
 use Gemini\Data\Content;
 use Gemini\Enums\Role;
@@ -29,7 +30,7 @@ class GeminiService implements AIProviderInterface
         $apiKey = Config::get('services.gemini.api_key');
         
         if (!$apiKey) {
-            throw new \Exception('Gemini API key not configured');
+            throw new MissingAIApiKeyException('Gemini');
         }
 
         $this->client = Gemini::client($apiKey);

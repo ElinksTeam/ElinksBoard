@@ -2,6 +2,7 @@
 
 namespace App\Services\AI;
 
+use App\Exceptions\UnsupportedAIProviderException;
 use Illuminate\Support\Facades\Config;
 
 class AIProviderFactory
@@ -11,7 +12,7 @@ class AIProviderFactory
      *
      * @param string|null $provider The provider name ('openai' or 'gemini'). If null, uses default from config
      * @return AIProviderInterface
-     * @throws \Exception
+     * @throws UnsupportedAIProviderException
      */
     public static function make(?string $provider = null): AIProviderInterface
     {
@@ -20,7 +21,7 @@ class AIProviderFactory
         return match ($provider) {
             'openai' => app(OpenAIService::class),
             'gemini' => app(GeminiService::class),
-            default => throw new \Exception("Unsupported AI provider: {$provider}")
+            default => throw new UnsupportedAIProviderException($provider)
         };
     }
 

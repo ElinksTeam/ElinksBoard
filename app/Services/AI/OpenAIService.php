@@ -2,6 +2,7 @@
 
 namespace App\Services\AI;
 
+use App\Exceptions\MissingAIApiKeyException;
 use OpenAI;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
@@ -28,7 +29,7 @@ class OpenAIService implements AIProviderInterface
         $baseUrl = Config::get('services.openai.base_url');
         
         if (!$apiKey) {
-            throw new \Exception('OpenAI API key not configured');
+            throw new MissingAIApiKeyException('OpenAI');
         }
 
         $config = ['api_key' => $apiKey];

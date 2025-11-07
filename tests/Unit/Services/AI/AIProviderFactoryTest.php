@@ -49,7 +49,7 @@ class AIProviderFactoryTest extends TestCase
      */
     public function test_throws_exception_for_unsupported_provider(): void
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(\App\Exceptions\UnsupportedAIProviderException::class);
         $this->expectExceptionMessage('Unsupported AI provider: invalid');
         
         AIProviderFactory::make('invalid');
