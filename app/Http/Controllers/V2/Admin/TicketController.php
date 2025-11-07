@@ -76,8 +76,8 @@ class TicketController extends Controller
                 $query->whereIn('reply_status', $request->input('reply_status'));
             })
             ->when($request->has('email'), function ($query) use ($request) {
-                $query->whereHas('user', function ($q) use ($request) {
-                    $q->where('email', $request->input('email'));
+                $query->whereHas('user', function ($queryBuilder) use ($request) {
+                    $queryBuilder->where('email', $request->input('email'));
                 });
             });
 

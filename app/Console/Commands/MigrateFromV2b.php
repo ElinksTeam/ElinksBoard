@@ -164,20 +164,20 @@ class MigrateFromV2b extends Command
         Artisan::call('config:clear');
         $configValue = config('v2board') ?? [];
 
-        foreach ($configValue as $k => $v) {
+        foreach ($configValue as $configKey => $configVal) {
             // 检查记录是否已存在
-            $existingSetting = Setting::where('name', $k)->first();
+            $existingSetting = Setting::where('name', $configKey)->first();
             
             // 如果记录不存在，则插入
             if ($existingSetting) {
-                $this->warn("配置 {$k} 在数据库已经存在， 忽略");
+                $this->warn("配置 {$configKey} 在数据库已经存在， 忽略");
                 continue;
             }
             Setting::create([
-                'name' => $k,
-                'value' => is_array($v)? json_encode($v) : $v,
+                'name' => $configKey,
+                'value' => is_array($configVal)? json_encode($configVal) : $configVal,
             ]);
-            $this->info("配置 {$k} 迁移成功");
+            $this->info("配置 {$configKey} 迁移成功");
         }
         Artisan::call('config:cache');
 

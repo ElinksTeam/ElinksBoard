@@ -83,14 +83,14 @@ class UserController extends Controller
         // 处理关联查询
         if (str_contains($field, '.')) {
             [$relation, $relationField] = explode('.', $field);
-            $query->whereHas($relation, function ($q) use ($relationField, $value) {
+            $query->whereHas($relation, function ($queryBuilder) use ($relationField, $value) {
                 if (is_array($value)) {
-                    $q->whereIn($relationField, $value);
+                    $queryBuilder->whereIn($relationField, $value);
                 } else if (is_string($value) && str_contains($value, ':')) {
                     [$operator, $filterValue] = explode(':', $value, 2);
-                    $this->applyQueryCondition($q, $relationField, $operator, $filterValue);
+                    $this->applyQueryCondition($queryBuilder, $relationField, $operator, $filterValue);
                 } else {
-                    $q->where($relationField, 'like', "%{$value}%");
+                    $queryBuilder->where($relationField, 'like', "%{$value}%");
                 }
             });
             return;

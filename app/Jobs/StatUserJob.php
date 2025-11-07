@@ -51,9 +51,9 @@ class StatUserJob implements ShouldQueue
             ? strtotime(date('Y-m-01'))
             : strtotime(date('Y-m-d'));
 
-        foreach ($this->data as $uid => $v) {
+        foreach ($this->data as $uid => $trafficData) {
             try {
-                $this->processUserStat($uid, $v, $recordAt);
+                $this->processUserStat($uid, $trafficData, $recordAt);
             } catch (\Exception $e) {
                 Log::error('StatUserJob failed for user ' . $uid . ': ' . $e->getMessage());
                 throw $e;
@@ -61,21 +61,21 @@ class StatUserJob implements ShouldQueue
         }
     }
 
-    protected function processUserStat(int $uid, array $v, int $recordAt): void
+    protected function processUserStat(int $uid, array $trafficData, int $recordAt): void
     {
         $driver = config('database.default');
         if ($driver === 'sqlite') {
-            $this->processUserStatForSqlite($uid, $v, $recordAt);
+            $this->processUserStatForSqlite($uid, $trafficData, $recordAt);
         } elseif ($driver === 'pgsql') {
-            $this->processUserStatForPostgres($uid, $v, $recordAt);
+            $this->processUserStatForPostgres($uid, $trafficData, $recordAt);
         } else {
-            $this->processUserStatForOtherDatabases($uid, $v, $recordAt);
+            $this->processUserStatForOtherDatabases($uid, $trafficData, $recordAt);
         }
     }
 
-    protected function processUserStatForSqlite(int $uid, array $v, int $recordAt): void
+    protected function processUserStatForSqlite(int $uid, array $trafficData, int $recordAt): void
     {
-        DB::transaction(function () use ($uid, $v, $recordAt) {
+        DB::transaction(function () use ($uid, $trafficData, $recordAt) {
             $existingRecord = StatUser::where([
                 'user_id' => $uid,
                 'server_rate' => $this->server['rate'],
@@ -85,8 +85,8 @@ class StatUserJob implements ShouldQueue
 
             if ($existingRecord) {
                 $existingRecord->update([
-                    'u' => $existingRecord->u + ($v[0] * $this->server['rate']),
-                    'd' => $existingRecord->d + ($v[1] * $this->server['rate']),
+                    'u' => $existingRecord->u + ($trafficData[0] * $this->server['rate']),
+                    'd' => $existingRecord->d + ($trafficData[1] * $this->server['rate']),
                     'updated_at' => time(),
                 ]);
             } else {
@@ -95,8 +95,8 @@ class StatUserJob implements ShouldQueue
                     'server_rate' => $this->server['rate'],
                     'record_at' => $recordAt,
                     'record_type' => $this->recordType,
-                    'u' => ($v[0] * $this->server['rate']),
-                    'd' => ($v[1] * $this->server['rate']),
+                    'u' => ($trafficData[0] * $this->server['rate']),
+                    'd' => ($trafficData[1] * $this->server['rate']),
                     'created_at' => time(),
                     'updated_at' => time(),
                 ]);
@@ -104,7 +104,7 @@ class StatUserJob implements ShouldQueue
         }, 3);
     }
 
-    protected function processUserStatForOtherDatabases(int $uid, array $v, int $recordAt): void
+    protected function processUserStatForOtherDatabases(int $uid, array $trafficData, int $recordAt): void
     {
         StatUser::upsert(
             [
@@ -112,8 +112,8 @@ class StatUserJob implements ShouldQueue
                 'server_rate' => $this->server['rate'],
                 'record_at' => $recordAt,
                 'record_type' => $this->recordType,
-                'u' => ($v[0] * $this->server['rate']),
-                'd' => ($v[1] * $this->server['rate']),
+                'u' => ($trafficData[0] * $this->server['rate']),
+                'd' => ($trafficData[1] * $this->server['rate']),
                 'created_at' => time(),
                 'updated_at' => time(),
             ],
@@ -129,12 +129,12 @@ class StatUserJob implements ShouldQueue
     /**
      * PostgreSQL upsert with arithmetic increments using ON CONFLICT ... DO UPDATE
      */
-    protected function processUserStatForPostgres(int $uid, array $v, int $recordAt): void
+    protected function processUserStatForPostgres(int $uid, array $trafficData, int $recordAt): void
     {
         $table = (new StatUser())->getTable();
         $now = time();
-        $u = ($v[0] * $this->server['rate']);
-        $d = ($v[1] * $this->server['rate']);
+        $u = ($trafficData[0] * $this->server['rate']);
+        $d = ($trafficData[1] * $this->server['rate']);
 
         $sql = "INSERT INTO {$table} (user_id, server_rate, record_at, record_type, u, d, created_at, updated_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)

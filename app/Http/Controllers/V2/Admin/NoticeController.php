@@ -86,9 +86,9 @@ class NoticeController extends Controller
 
         try {
             DB::beginTransaction();
-            foreach ($params['ids'] as $k => $v) {
-                $notice = Notice::findOrFail($v);
-                $notice->update(['sort' => $k + 1]);
+            foreach ($params['ids'] as $index => $noticeId) {
+                $notice = Notice::findOrFail($noticeId);
+                $notice->update(['sort' => $index + 1]);
             }
             DB::commit();
             return $this->success(true);

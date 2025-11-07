@@ -137,8 +137,8 @@ class SystemController extends Controller
                 return $query->where('level', strtoupper($level));
             })
             ->when($keyword, function ($query) use ($keyword) {
-                return $query->where(function ($q) use ($keyword) {
-                    $q->where('data', 'like', '%' . $keyword . '%')
+                return $query->where(function ($queryBuilder) use ($keyword) {
+                    $queryBuilder->where('data', 'like', '%' . $keyword . '%')
                         ->orWhere('context', 'like', '%' . $keyword . '%')
                         ->orWhere('title', 'like', '%' . $keyword . '%')
                         ->orWhere('uri', 'like', '%' . $keyword . '%');

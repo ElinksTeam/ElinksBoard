@@ -26,13 +26,13 @@ class PaymentController extends Controller
     public function fetch()
     {
         $payments = Payment::orderBy('sort', 'ASC')->get();
-        foreach ($payments as $k => $v) {
-            $notifyUrl = url("/api/v1/guest/payment/notify/{$v->payment}/{$v->uuid}");
-            if ($v->notify_domain) {
+        foreach ($payments as $index => $payment) {
+            $notifyUrl = url("/api/v1/guest/payment/notify/{$payment->payment}/{$payment->uuid}");
+            if ($payment->notify_domain) {
                 $parseUrl = parse_url($notifyUrl);
-                $notifyUrl = $v->notify_domain . $parseUrl['path'];
+                $notifyUrl = $payment->notify_domain . $parseUrl['path'];
             }
-            $payments[$k]['notify_url'] = $notifyUrl;
+            $payments[$index]['notify_url'] = $notifyUrl;
         }
         return $this->success($payments);
     }
@@ -117,8 +117,8 @@ class PaymentController extends Controller
         ]);
         try {
             DB::beginTransaction();
-            foreach ($request->input('ids') as $k => $v) {
-                if (!Payment::find($v)->update(['sort' => $k + 1])) {
+            foreach ($request->input('ids') as $index => $paymentId) {
+                if (!Payment::find($paymentId)->update(['sort' => $index + 1])) {
                     throw new \Exception();
                 }
             }
